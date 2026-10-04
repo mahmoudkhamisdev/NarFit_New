@@ -10,4 +10,6 @@ export * from './tag';
 export * from './select';
 export * from './bottom-sheet';
 export * from './theme-toggle';
+export * from './otp-input';
+export * from './form';
 

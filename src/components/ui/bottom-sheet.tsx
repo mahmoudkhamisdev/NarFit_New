@@ -19,6 +19,7 @@ export interface CustomBottomSheetModalProps extends BottomSheetModalProps {
   children: React.ReactNode;
   contentClassName?: string;
   enableBackdrop?: boolean;
+  noBottomSheetView?: boolean;
 }
 
 export const BottomSheetModal = forwardRef<GorhomBottomSheetModal, CustomBottomSheetModalProps>(
@@ -27,6 +28,7 @@ export const BottomSheetModal = forwardRef<GorhomBottomSheetModal, CustomBottomS
       children,
       contentClassName = '',
       enableBackdrop = true,
+      noBottomSheetView = false,
       backgroundStyle,
       handleIndicatorStyle,
       ...props
@@ -76,9 +78,13 @@ export const BottomSheetModal = forwardRef<GorhomBottomSheetModal, CustomBottomS
         ]}
         {...props}
       >
-        <BottomSheetView className={`p-5 ${contentClassName}`}>
-          {children}
-        </BottomSheetView>
+        {noBottomSheetView ? (
+          children
+        ) : (
+          <BottomSheetView className={`p-5 ${contentClassName}`}>
+            {children}
+          </BottomSheetView>
+        )}
       </GorhomBottomSheetModal>
     );
   }
@@ -89,10 +95,21 @@ BottomSheetModal.displayName = 'BottomSheetModal';
 export interface CustomBottomSheetProps extends BottomSheetProps {
   children: React.ReactNode;
   contentClassName?: string;
+  noBottomSheetView?: boolean;
 }
 
 export const BottomSheet = forwardRef<GorhomBottomSheet, CustomBottomSheetProps>(
-  ({ children, contentClassName = '', backgroundStyle, handleIndicatorStyle, ...props }, ref) => {
+  (
+    {
+      children,
+      contentClassName = '',
+      noBottomSheetView = false,
+      backgroundStyle,
+      handleIndicatorStyle,
+      ...props
+    },
+    ref
+  ) => {
     const { theme } = useUniwind();
     const isDark = theme === 'dark';
 
@@ -120,9 +137,13 @@ export const BottomSheet = forwardRef<GorhomBottomSheet, CustomBottomSheetProps>
         ]}
         {...props}
       >
-        <BottomSheetView className={`p-5 ${contentClassName}`}>
-          {children}
-        </BottomSheetView>
+        {noBottomSheetView ? (
+          children
+        ) : (
+          <BottomSheetView className={`p-5 ${contentClassName}`}>
+            {children}
+          </BottomSheetView>
+        )}
       </GorhomBottomSheet>
     );
   }

@@ -75,4 +75,40 @@
       --color-info-bg: #e0f2fe;
     }
   }
+
+  .dark {
+    /* Backgrounds */
+    --color-background: #000000;
+    --color-surface: #161616;
+    --color-card: #1a1a1a;
+    --color-card-subtle: #262626;
+
+    /* Text */
+    --color-foreground: #f2f4f5;
+    --color-foreground-secondary: #d1d5d8;
+    --color-muted: #737373;
+    --color-disabled: #4d4d4d;
+    --color-inverse: #1a1a1a;
+
+    /* Borders */
+    --color-border: #333333;
+    --color-border-subtle: #262626;
+    --color-border-strong: #4d4d4d;
+
+    /* Brand (Figma Dark: Neon Lime #caff2e / #bfff00) */
+    --color-brand: #caff2e;
+    --color-brand-neon: #bfff00;
+    --color-brand-disabled: #394c00;
+    --color-brand-text-disabled: #526b00;
+
+    /* Semantic Status */
+    --color-error: #b42318;
+    --color-error-bg: #381212;
+    --color-success: #027a48;
+    --color-success-bg: #0b2b1a;
+    --color-warning: #b54708;
+    --color-warning-bg: #3d2307;
+    --color-info: #026aa2;
+    --color-info-bg: #0a2538;
+  }
 }

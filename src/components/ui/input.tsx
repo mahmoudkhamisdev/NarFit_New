@@ -13,6 +13,7 @@ export interface InputProps extends TextInputProps {
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   required?: boolean;
+  className?: string;
   containerClassName?: string;
   inputClassName?: string;
   labelClassName?: string;
@@ -27,6 +28,7 @@ export const Input = forwardRef<TextInput, InputProps>(
       leftIcon,
       rightIcon,
       required = false,
+      className = '',
       containerClassName = '',
       inputClassName = '',
       labelClassName = '',
@@ -56,7 +58,7 @@ export const Input = forwardRef<TextInput, InputProps>(
     };
 
     return (
-      <View className={`w-full ${containerClassName}`}>
+      <View className={`${containerClassName ? containerClassName : 'w-full'}`}>
         {label && (
           <View className="mb-2 flex-row items-center gap-1">
             <Text
@@ -71,7 +73,7 @@ export const Input = forwardRef<TextInput, InputProps>(
         )}
 
         <View
-          className={`h-14 w-full flex-row items-center rounded-2xl border px-4 gap-3 ${getFieldStateClasses()}`}
+          className={`h-14 w-full flex-row items-center rounded-2xl border px-4 gap-3 ${getFieldStateClasses()} ${className}`}
         >
           {leftIcon && <View className="items-center justify-center">{leftIcon}</View>}
 
