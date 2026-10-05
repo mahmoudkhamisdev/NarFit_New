@@ -76,7 +76,7 @@ export default function Index() {
         <View className="flex-row items-center justify-between">
           <View>
             <Text className="text-3xl font-extrabold tracking-tight text-brand">
-              NAR-FIT
+              NAR-FITttt
             </Text>
             <Text className="mt-1 text-sm font-medium text-muted">
               Design System UI Components
@@ -127,54 +127,44 @@ export default function Index() {
             onPress={() => router.push('/onboarding/otp')}
           />
           <Button
-            title="4. Profile Setup Screen (39:4259)"
+            title="4. Onboarding Flow (5 Steps Wizard)"
             variant="default"
             size="md"
             rightIcon={<Icon as={ArrowRight} size={18} className="text-foreground" />}
             onPress={() => router.push('/onboarding/profile')}
           />
-
           <Button
-            title="5. Experience Screen (39:5307)"
-            variant="default"
-            size="md"
-            rightIcon={<Icon as={ArrowRight} size={18} className="text-foreground" />}
-            onPress={() => router.push('/onboarding/experience')}
-          />
-          <Button
-            title="6. Specialization Screen (39:5389)"
-            variant="default"
-            size="md"
-            rightIcon={<Icon as={ArrowRight} size={18} className="text-foreground" />}
-            onPress={() => router.push('/onboarding/specialization')}
-          />
-          <Button
-            title="7. Number of Clients Screen (39:5742)"
-            variant="default"
-            size="md"
-            rightIcon={<Icon as={ArrowRight} size={18} className="text-inverse" />}
-            onPress={() => router.push('/onboarding/clients')}
-          />
-          <Button
-            title="8. Coach Profile Photo (39:5969)"
-            variant="default"
-            size="md"
-            rightIcon={<Icon as={ArrowRight} size={18} className="text-foreground" />}
-            onPress={() => router.push('/onboarding/coach-photo')}
-          />
-          <Button
-            title="9. Choose Avatar Screen"
-            variant="default"
-            size="md"
-            rightIcon={<Icon as={ArrowRight} size={18} className="text-foreground" />}
-            onPress={() => router.push('/onboarding/avatar')}
-          />
-          <Button
-            title="10. You're All Set (39:3209)"
+            title="5. You're All Set (39:3209)"
             variant="primary"
             size="md"
             rightIcon={<Icon as={ArrowRight} size={18} className="text-inverse" />}
             onPress={() => router.push('/onboarding/all-set')}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Client Management Screens */}
+      <Card className="mb-8 border-2 border-brand/50 bg-brand/5">
+        <CardHeader>
+          <View className="flex-row items-center justify-between">
+            <View className="flex-1">
+              <CardTitle>Client Management</CardTitle>
+              <CardDescription>
+                Reusable Client Flow (Figma node 39:2894)
+              </CardDescription>
+            </View>
+            <View className="rounded-full bg-brand px-3 py-1">
+              <Text className="text-xs font-bold text-inverse">New</Text>
+            </View>
+          </View>
+        </CardHeader>
+        <CardContent className="gap-3">
+          <Button
+            title="Add Client Screen (39:2894)"
+            variant="primary"
+            size="md"
+            rightIcon={<Icon as={ArrowRight} size={18} className="text-inverse" />}
+            onPress={() => router.push('/add-client')}
           />
         </CardContent>
       </Card>

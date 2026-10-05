@@ -49,10 +49,10 @@ export const Input = forwardRef<TextInput, InputProps>(
         return 'bg-card/50 border-border-subtle opacity-60';
       }
       if (isError) {
-        return 'bg-card border-error ring-1 ring-error';
+        return 'bg-card border-2 border-error';
       }
       if (isFocused) {
-        return 'bg-card border-brand ring-1 ring-brand/40';
+        return 'bg-card border-2 border-brand';
       }
       return 'bg-card border-border';
     };
@@ -96,11 +96,11 @@ export const Input = forwardRef<TextInput, InputProps>(
           {rightIcon && <View className="items-center justify-center">{rightIcon}</View>}
         </View>
 
-        {error ? (
+        {/* {error ? (
           <Text className="mt-1.5 text-xs font-medium text-error">{error}</Text>
         ) : hint ? (
           <Text className="mt-1.5 text-xs text-muted">{hint}</Text>
-        ) : null}
+        ) : null} */}
       </View>
     );
   }

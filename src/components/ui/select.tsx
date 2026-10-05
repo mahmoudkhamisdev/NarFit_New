@@ -73,10 +73,10 @@ export function Select({
       return 'bg-card/50 border-border-subtle opacity-60';
     }
     if (isError) {
-      return 'bg-card border-error ring-1 ring-error';
+      return 'bg-card border-2 border-error';
     }
     if (isOpen) {
-      return 'bg-card border-brand ring-1 ring-brand/40';
+      return 'bg-card border-2 border-brand';
     }
     return 'bg-card border-border';
   };

@@ -1,36 +1,26 @@
-import { Button, Card, Icon, Input } from '@/components/ui';
+import { Button, Card } from '@/components/ui';
+import { PhoneInput } from '@/components/shared';
 import { Country, DEFAULT_COUNTRY } from '@/constants/countries';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { ChevronDown } from 'lucide-react-native';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import {
   ImageBackground,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import CountryPickerSheet, {
-  CountryPickerSheetRef,
-} from './_components/country-picker-sheet';
 
 const greenBg = require('@/assets/images/on-boarding/green-bg.png');
 
 export default function SignupPhoneScreen() {
   const insets = useSafeAreaInsets();
-  const countryPickerRef = useRef<CountryPickerSheetRef>(null);
-
   const [selectedCountry, setSelectedCountry] = useState<Country>(DEFAULT_COUNTRY);
   const [phoneNumber, setPhoneNumber] = useState('');
-
-  const handleOpenCountryPicker = () => {
-    countryPickerRef.current?.present();
-  };
 
   const handleSignUp = () => {
     // Navigate to OTP verification screen (Figma node 72:6849)
@@ -88,30 +78,13 @@ export default function SignupPhoneScreen() {
             <View className="px-4">
               <Card className="rounded-4xl bg-card p-5 gap-4 border border-border/60 shadow-2xl">
                 {/* Unified Country Picker & Phone Input in ONE Section */}
-                <Input
+                <PhoneInput
                   value={phoneNumber}
                   onChangeText={setPhoneNumber}
-                  placeholder="010 1234 5678"
-                  placeholderTextColor="#9ca3a7"
-                  keyboardType="phone-pad"
-                  multiline={false}
-                  numberOfLines={1}
+                  selectedCountry={selectedCountry}
+                  onSelectCountry={setSelectedCountry}
                   className="h-17.5 border-2"
                   inputClassName="text-lg font-semibold text-foreground"
-                  leftIcon={
-                    <Pressable
-                      onPress={handleOpenCountryPicker}
-                      className="h-9 flex-row items-center gap-2 pr-2 border-r border-border active:opacity-70"
-                      accessibilityRole="button"
-                      accessibilityLabel={`Selected country ${selectedCountry.name}, ${selectedCountry.code}. Tap to change country.`}
-                    >
-                      <Text className="text-2xl leading-none">{selectedCountry.flag}</Text>
-                      <Text className="text-lg font-bold text-foreground">
-                        {selectedCountry.code}
-                      </Text>
-                      <Icon as={ChevronDown} size={16} className="text-muted ml-0.5" />
-                    </Pressable>
-                  }
                 />
 
                 {/* Continue Button for both Login and Sign up */}
@@ -128,13 +101,6 @@ export default function SignupPhoneScreen() {
           </ScrollView>
         </KeyboardAvoidingView>
       </ImageBackground>
-
-      {/* Country Selection Bottom Sheet (separated component) */}
-      <CountryPickerSheet
-        ref={countryPickerRef}
-        selectedCountry={selectedCountry}
-        onSelectCountry={setSelectedCountry}
-      />
     </View>
   );
 }

@@ -23,12 +23,15 @@ export default function RootLayout() {
             <Stack.Screen name="onboarding/signup-phone" />
             <Stack.Screen name="onboarding/otp" />
             <Stack.Screen name="onboarding/profile" />
-            <Stack.Screen name="onboarding/experience" />
-            <Stack.Screen name="onboarding/specialization" />
-            <Stack.Screen name="onboarding/clients" />
-            <Stack.Screen name="onboarding/coach-photo" />
-            <Stack.Screen name="onboarding/avatar" />
-            <Stack.Screen name="onboarding/all-set" />
+            <Stack.Screen
+              name="onboarding/all-set"
+              options={{ gestureEnabled: false }}
+            />
+            <Stack.Screen name="add-client/index" />
+            <Stack.Screen
+              name="add-client/success"
+              options={{ gestureEnabled: false }}
+            />
           </Stack>
         </BottomSheetModalProvider>
       </ThemeTransitionProvider>

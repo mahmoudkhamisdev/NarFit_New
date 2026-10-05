@@ -1,14 +1,14 @@
 import { BackButton } from '@/components/shared';
 import { Form } from '@/components/ui';
 import {
-  defaultOnboardingValues,
-  onboardingFormSchema,
-  OnboardingFormValues,
-  parseOnboardingForm,
-  serializeOnboardingForm,
-} from '@/schemas/onboarding';
+  AddClientFormValues,
+  addClientFormSchema,
+  defaultAddClientValues,
+  serializeClientForm,
+} from '@/schemas/client';
+import { useClientStore } from '@/store';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -17,38 +17,35 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Text,
   View,
 } from 'react-native';
 import { FadeSlideIn } from 'react-native-animation-kit';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { AddClientStepper } from './_components/stepper';
 import {
-  ClientsStep,
-  CoachPhotoStep,
-  ExperienceStep,
-  ProfileStep,
-  SpecializationStep,
+  ActivityStep,
+  GoalStep,
+  PersonalInfoStep,
 } from './_components/steps';
 
-export default function OnboardingScreen() {
+export default function AddClientScreen() {
   const insets = useSafeAreaInsets();
-  const params = useLocalSearchParams<{ formState?: string }>();
-  const initialValues = parseOnboardingForm(params.formState);
+  const addClient = useClientStore((state) => state.addClient);
 
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [direction, setDirection] = useState<'left' | 'right'>('right');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
-  // Single centralized form instance holding state across all 5 steps
-  const form = useForm<OnboardingFormValues>({
-    resolver: zodResolver(onboardingFormSchema),
-    defaultValues: {
-      ...defaultOnboardingValues,
-      ...initialValues,
-    },
+  // Single centralized form instance holding state across all steps
+  const form = useForm<AddClientFormValues>({
+    resolver: zodResolver(addClientFormSchema),
+    defaultValues: defaultAddClientValues,
     mode: 'onBlur',
   });
 
-  // Handle back button on screen and Android hardware back button
+  // Handle hardware back on Android and BackButton click
   const handleBack = () => {
     if (currentStep > 1) {
       setDirection('left');
@@ -72,7 +69,7 @@ export default function OnboardingScreen() {
     return () => subscription.remove();
   }, [currentStep]);
 
-  // Step transition handlers
+  // Step navigation handlers
   const handleGoToStep2 = () => {
     setDirection('right');
     setCurrentStep(2);
@@ -83,48 +80,50 @@ export default function OnboardingScreen() {
     setCurrentStep(3);
   };
 
-  const handleGoToStep4 = () => {
-    setDirection('right');
-    setCurrentStep(4);
-  };
-
-  const handleGoToStep5 = () => {
-    setDirection('right');
-    setCurrentStep(5);
-  };
-
-  // Final submission on Step 5 (Coach Profile Photo)
+  // Final submission handler on step 3
   const handleFinalSubmit = form.handleSubmit(async (formData) => {
     try {
       setIsSubmitting(true);
-      // Navigate to All Set screen, replacing the onboarding wizard in history
+      setSubmitError(null);
+
+      const completeData: AddClientFormValues = {
+        ...formData,
+        age: Number(formData.age),
+        weight: Number(formData.weight),
+        height: Number(formData.height),
+      };
+
+      const savedClient = await addClient(completeData);
+
+      // Navigate to success screen, replacing the add-client wizard in the history stack
       router.replace({
-        pathname: '/onboarding/all-set',
-        params: { formState: serializeOnboardingForm(formData) },
+        pathname: '/add-client/success',
+        params: {
+          formState: serializeClientForm(completeData),
+          clientId: savedClient.id,
+        },
       });
-    } catch (error) {
-      console.error('Error submitting onboarding:', error);
+    } catch (error: any) {
+      console.error('Failed to submit client:', error);
+      setSubmitError(error?.message || 'Failed to submit client. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   });
 
-  // Switch statement to render the active onboarding step
+  // Switch statement to render the active step
   const renderCurrentStep = () => {
     switch (currentStep) {
       case 1:
-        return <ProfileStep onContinue={handleGoToStep2} />;
+        return <PersonalInfoStep onContinue={handleGoToStep2} />;
       case 2:
-        return <ExperienceStep onContinue={handleGoToStep3} />;
+        return <GoalStep onContinue={handleGoToStep3} />;
       case 3:
-        return <SpecializationStep onContinue={handleGoToStep4} />;
-      case 4:
-        return <ClientsStep onContinue={handleGoToStep5} />;
-      case 5:
         return (
-          <CoachPhotoStep
-            onSubmit={handleFinalSubmit}
+          <ActivityStep
             isSubmitting={isSubmitting}
+            submitError={submitError}
+            onSubmit={handleFinalSubmit}
           />
         );
       default:
@@ -134,30 +133,37 @@ export default function OnboardingScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <StatusBar style="auto" />
+      <StatusBar style="auto" hidden />
 
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === 'ios' ? 'padding' : "height"}
         className="flex-1"
       >
         <ScrollView
           className="flex-1"
           contentContainerStyle={{
             paddingTop: insets.top + 12,
-            paddingBottom: insets.bottom + 20,
-            paddingHorizontal: 20,
+            paddingBottom: insets.bottom + 24,
+            paddingHorizontal: 16,
             flexGrow: 1,
-            justifyContent: 'space-between',
           }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
-          bounces={false}
         >
-          {/* Top Bar with Back Button */}
-          <View className="flex-row items-center justify-between pb-1">
+          {/* Header Bar */}
+          <View className="flex-row items-center justify-between">
             <BackButton onPress={handleBack} />
+
+            <Text className="text-2xl font-bold tracking-tight text-foreground">
+              Add client
+            </Text>
+
+            {/* Symmetrical placeholder for centered title */}
             <View className="h-12 w-12" />
           </View>
+
+          {/* Stepper / Progress Bar (updates with currentStep) */}
+          <AddClientStepper currentStep={currentStep} />
 
           {/* Form Context wrapper around animated Step view */}
           <Form {...form}>

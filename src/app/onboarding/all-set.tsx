@@ -5,6 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import { ArrowRight } from 'lucide-react-native';
 import React from 'react';
 import {
+  BackHandler,
   Image,
   Pressable,
   ScrollView,
@@ -23,6 +24,16 @@ export default function AllSetScreen() {
   const params = useLocalSearchParams<{ formState?: string }>();
 
   React.useEffect(() => {
+    const onBackPress = () => {
+      router.replace('/');
+      return true;
+    };
+
+    const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => subscription.remove();
+  }, []);
+
+  React.useEffect(() => {
     if (__DEV__ && params.formState) {
       const data = parseOnboardingForm(params.formState);
       console.log('Completed Onboarding Form:', data);
@@ -34,8 +45,7 @@ export default function AllSetScreen() {
   };
 
   const handleAddFirstClient = () => {
-    // Navigate to client management or home
-    router.replace('/');
+    router.push('/add-client');
   };
 
   return (
@@ -56,7 +66,7 @@ export default function AllSetScreen() {
         {/* Top Section: Header & Hero */}
         <View className="w-full">
           {/* Header */}
-          <BackButton />
+          <BackButton onPress={() => router.replace('/')} />
 
           {/* Hero Section */}
           <View className="w-full items-center pt-2">
