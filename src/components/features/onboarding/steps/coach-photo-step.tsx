@@ -1,4 +1,4 @@
-import { AvatarSelectionSheet, AvatarSelectionSheetRef } from '@/app/add-client/_components/avatar-selection-sheet';
+import { AvatarSelectionSheet, AvatarSelectionSheetRef } from '@/components/features/add-client/avatar-selection-sheet';
 import {
   Button,
   FormControl,

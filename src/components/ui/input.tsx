@@ -49,12 +49,12 @@ export const Input = forwardRef<TextInput, InputProps>(
         return 'bg-card/50 border-border-subtle opacity-60';
       }
       if (isError) {
-        return 'bg-card border-2 border-error';
+        return 'bg-card border-[1.5px] border-error';
       }
       if (isFocused) {
-        return 'bg-card border-2 border-brand';
+        return 'bg-card border-[1.5px] border-brand';
       }
-      return 'bg-card border-border';
+      return 'bg-card border-[1px] border-border';
     };
 
     return (
@@ -73,7 +73,7 @@ export const Input = forwardRef<TextInput, InputProps>(
         )}
 
         <View
-          className={`h-14 w-full flex-row items-center rounded-2xl border px-4 gap-3 ${getFieldStateClasses()} ${className}`}
+          className={`h-14 w-full flex-row items-center rounded-2xl px-4 gap-3 ${getFieldStateClasses()} ${className}`}
         >
           {leftIcon && <View className="items-center justify-center">{leftIcon}</View>}
 

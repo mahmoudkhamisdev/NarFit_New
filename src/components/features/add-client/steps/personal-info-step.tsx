@@ -267,8 +267,7 @@ export function PersonalInfoStep({ onContinue }: PersonalInfoStepProps) {
         </View>
       </View>
 
-      {/* Spacer to push Continue button */}
-      <View className="min-h-[28px] flex-1" />
+
 
       {/* Continue Button */}
       <View className="pt-4">

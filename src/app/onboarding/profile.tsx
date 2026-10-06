@@ -27,7 +27,7 @@ import {
   ExperienceStep,
   ProfileStep,
   SpecializationStep,
-} from './_components/steps';
+} from '@/components/features/onboarding/steps';
 
 export default function OnboardingScreen() {
   const insets = useSafeAreaInsets();

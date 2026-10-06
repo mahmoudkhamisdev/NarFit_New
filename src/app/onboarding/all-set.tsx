@@ -13,7 +13,7 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import BackButton from './_components/back-button';
+import BackButton from '@/components/features/onboarding/back-button';
 
 const correctMarkImg = require('@/assets/images/all-set/correct-mark.png');
 const lensImg = require('@/assets/images/all-set/lens.png');

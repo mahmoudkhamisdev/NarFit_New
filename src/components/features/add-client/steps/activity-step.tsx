@@ -57,21 +57,19 @@ export function ActivityStep({
                     <Pressable
                       key={option.id}
                       onPress={() => field.onChange(option.id)}
-                      className={`h-[74px] w-full justify-center rounded-2xl px-5 border ${
-                        isSelected
+                      className={`h-[74px] w-full justify-center rounded-2xl px-5 border ${isSelected
                           ? 'border-2 border-brand bg-card'
                           : 'border border-border/80 bg-card active:bg-card-subtle'
-                      }`}
+                        }`}
                       accessibilityRole="radio"
                       accessibilityState={{ selected: isSelected }}
                       accessibilityLabel={`${option.title}, ${option.description}`}
                     >
                       <Text
-                        className={`text-lg leading-tight ${
-                          isSelected
+                        className={`text-lg leading-tight ${isSelected
                             ? 'font-semibold text-foreground'
                             : 'font-medium text-foreground-secondary'
-                        }`}
+                          }`}
                       >
                         {option.title}
                       </Text>
@@ -88,8 +86,7 @@ export function ActivityStep({
         )}
       />
 
-      {/* Spacer to push Continue button */}
-      <View className="min-h-[28px] flex-1" />
+
 
       {/* Continue Button */}
       <View className="pt-4">

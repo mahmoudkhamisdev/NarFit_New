@@ -36,12 +36,16 @@ import {
   Textarea,
   ThemeToggle,
 } from '@/components/ui';
+import { AnimatedSplashScreen } from '@/components/splash';
 import { useTheme } from '@/lib/theme';
 
 export default function Index() {
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
   const bottomSheetModalRef = useRef<GorhomBottomSheetModal>(null);
+
+  const [showSplashPreview, setShowSplashPreview] = useState(false);
+
 
   const [inputValue, setInputValue] = useState('');
   const [textareaValue, setTextareaValue] = useState('');
@@ -63,8 +67,9 @@ export default function Index() {
   ];
 
   return (
-    <ScrollView
-      className="flex-1 bg-background"
+    <View className="flex-1">
+      <ScrollView
+        className="flex-1 bg-background"
       contentContainerStyle={{
         paddingTop: insets.top + 20,
         paddingBottom: insets.bottom + 40,
@@ -140,6 +145,13 @@ export default function Index() {
             rightIcon={<Icon as={ArrowRight} size={18} className="text-inverse" />}
             onPress={() => router.push('/onboarding/all-set')}
           />
+          <Button
+            title="1. Dashboard Screen (72:6844)"
+            variant="default"
+            size="md"
+            rightIcon={<Icon as={ArrowRight} size={18} className="text-foreground" />}
+            onPress={() => router.push('/dashboard')}
+          />
         </CardContent>
       </Card>
 
@@ -165,6 +177,29 @@ export default function Index() {
             size="md"
             rightIcon={<Icon as={ArrowRight} size={18} className="text-inverse" />}
             onPress={() => router.push('/add-client')}
+          />
+          <Button
+            title="Notifications Screen (New)"
+            variant="default"
+            size="md"
+            rightIcon={<Icon as={ArrowRight} size={18} className="text-foreground" />}
+            onPress={() => router.push('/notifications' as any)}
+          />
+          <Button
+            title="Clients Screen (New)"
+            variant="default"
+            size="md"
+            rightIcon={<Icon as={ArrowRight} size={18} className="text-foreground" />}
+            onPress={() => router.push('/clients' as any)}
+          />
+          <Button
+            title="Preview Animated Splash (With Updates Demo)"
+            variant="outline"
+            size="md"
+            rightIcon={<Icon as={Sparkles} size={18} className="text-brand" />}
+            onPress={() => {
+              setShowSplashPreview(true);
+            }}
           />
         </CardContent>
       </Card>
@@ -504,5 +539,12 @@ export default function Index() {
         </View>
       </BottomSheetModal>
     </ScrollView>
-  );
+
+    {showSplashPreview && (
+      <AnimatedSplashScreen
+        onFinish={() => setShowSplashPreview(false)}
+      />
+    )}
+  </View>
+);
 }

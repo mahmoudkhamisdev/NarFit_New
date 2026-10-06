@@ -74,7 +74,7 @@ export default function ClientAddedSuccessScreen() {
             <Image
               source={clientSuccessImg}
               className="w-full h-full"
-              resizeMode="contain"
+              resizeMode="cover"
               accessibilityLabel="Client added illustration"
             />
           </View>

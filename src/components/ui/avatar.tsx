@@ -13,7 +13,7 @@ export type AvatarSize = 'xxs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 export type AvatarColor = 'neutral' | 'primary' | 'red' | 'green' | 'orange' | 'blue';
 
 export interface AvatarProps extends ViewProps {
-  source?: string | ImageSource;
+  source?: string | ImageSource | number;
   name?: string;
   fallback?: string;
   size?: AvatarSize;
@@ -88,7 +88,13 @@ export function Avatar({
   style,
   ...rest
 }: AvatarProps) {
+  const [prevSource, setPrevSource] = useState(source);
   const [imageError, setImageError] = useState(false);
+
+  if (source !== prevSource) {
+    setPrevSource(source);
+    setImageError(false);
+  }
 
   const { container: sizeClass, text: textSizeClass, iconSize } = sizeConfig[size];
   const { bg, border, text: textColorClass, iconClass } = colorConfig[color];
@@ -114,7 +120,7 @@ export function Avatar({
       {hasValidImage ? (
         <Image
           source={source}
-          className="h-full w-full rounded-full"
+          style={{ width: '100%', height: '100%' }}
           contentFit="cover"
           onError={() => setImageError(true)}
         />

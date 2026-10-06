@@ -6,7 +6,6 @@ import {
   defaultAddClientValues,
   serializeClientForm,
 } from '@/schemas/client';
-import { useClientStore } from '@/store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -22,16 +21,15 @@ import {
 } from 'react-native';
 import { FadeSlideIn } from 'react-native-animation-kit';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { AddClientStepper } from './_components/stepper';
+import { AddClientStepper } from '@/components/features/add-client/stepper';
 import {
   ActivityStep,
   GoalStep,
   PersonalInfoStep,
-} from './_components/steps';
+} from '@/components/features/add-client/steps';
 
 export default function AddClientScreen() {
   const insets = useSafeAreaInsets();
-  const addClient = useClientStore((state) => state.addClient);
 
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [direction, setDirection] = useState<'left' | 'right'>('right');
@@ -93,14 +91,11 @@ export default function AddClientScreen() {
         height: Number(formData.height),
       };
 
-      const savedClient = await addClient(completeData);
-
       // Navigate to success screen, replacing the add-client wizard in the history stack
       router.replace({
         pathname: '/add-client/success',
         params: {
           formState: serializeClientForm(completeData),
-          clientId: savedClient.id,
         },
       });
     } catch (error: any) {
