@@ -9,11 +9,26 @@ import {
 } from '@/components/ui';
 import { CLIENT_GOAL_OPTIONS } from '@/constants/client';
 import { AddClientFormValues, defaultAddClientValues } from '@/schemas/client';
-import { X } from 'lucide-react-native';
+import {
+  Apple,
+  BicepsFlexed,
+  Flame,
+  Sparkles,
+  TrendingUp,
+  X,
+} from 'lucide-react-native';
 import React, { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Pressable, Text, View } from 'react-native';
 import { FadeSlideIn } from 'react-native-animation-kit';
+
+const GOAL_ICONS: Record<string, any> = {
+  'lose-weight': Flame,
+  'eat-healthier': Apple,
+  'gain-weight': TrendingUp,
+  'build-muscle': BicepsFlexed,
+  'something-else': Sparkles,
+};
 
 const PREDEFINED_GOAL_IDS = [
   'lose-weight',
@@ -51,7 +66,7 @@ export function GoalStep({ onContinue }: GoalStepProps) {
     <View className="flex-1">
       {/* Page Title & Subtitle */}
       <View className="mt-8 mb-6">
-        <Text className="text-5xl font-black tracking-tight text-foreground leading-[52px]">
+        <Text className="text-5xl font-black tracking-tight text-foreground leading-13">
           Client goal
         </Text>
         <Text className="mt-2 text-base font-medium text-muted">
@@ -96,6 +111,7 @@ export function GoalStep({ onContinue }: GoalStepProps) {
                           className="h-[74px] px-5 border-2 border-brand"
                           style={{ height: 74 }}
                           inputClassName="text-base font-semibold text-foreground"
+                          leftIcon={<Icon as={Sparkles} size={22} className="text-brand" />}
                           error={fieldState.error?.message}
                           autoFocus
                           rightIcon={
@@ -117,6 +133,8 @@ export function GoalStep({ onContinue }: GoalStepProps) {
                     );
                   }
 
+                  const GoalIcon = GOAL_ICONS[option.id] || Sparkles;
+
                   return (
                     <Pressable
                       key={option.id}
@@ -131,7 +149,7 @@ export function GoalStep({ onContinue }: GoalStepProps) {
                           field.onChange(option.id);
                         }
                       }}
-                      className={`h-[74px] w-full flex-row items-center rounded-2xl px-5 border ${
+                      className={`h-[74px] w-full flex-row items-center rounded-2xl px-5 gap-3.5 border ${
                         isSelected
                           ? 'border-2 border-brand bg-card'
                           : 'border border-border/80 bg-card active:bg-card-subtle'
@@ -140,8 +158,16 @@ export function GoalStep({ onContinue }: GoalStepProps) {
                       accessibilityState={{ selected: isSelected }}
                       accessibilityLabel={option.label}
                     >
+                      <View className="items-center justify-center">
+                        <Icon
+                          as={GoalIcon}
+                          size={22}
+                          className={isSelected ? 'text-brand' : 'text-muted'}
+                        />
+                      </View>
                       <Text
-                        className={`text-lg ${
+                        numberOfLines={1}
+                        className={`flex-1 text-base ${
                           isSelected
                             ? 'font-semibold text-foreground'
                             : 'font-medium text-muted'

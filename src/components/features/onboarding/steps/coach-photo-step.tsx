@@ -19,11 +19,11 @@ import {
   Platform,
   Pressable,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
 import Svg, { ClipPath, Defs, G, Image as SvgImage, Path } from 'react-native-svg';
 import { useResolveClassNames } from 'uniwind';
+import { Text } from '@/components/ui/text';
 
 interface CoachPhotoStepProps {
   onSubmit: () => void;

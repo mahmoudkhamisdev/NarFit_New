@@ -1,10 +1,10 @@
 import React, { forwardRef, useState } from 'react';
 import {
-  Text,
   TextInput,
   TextInputProps,
   View,
 } from 'react-native';
+import { Text } from './text';
 
 export interface InputProps extends TextInputProps {
   label?: string;
@@ -82,6 +82,7 @@ export const Input = forwardRef<TextInput, InputProps>(
             editable={editable}
             placeholderTextColor="#737373"
             className={`flex-1 text-base text-foreground ${inputClassName}`}
+            style={[{ fontFamily: 'RightGrotesk-Regular' }, rest.style]}
             onFocus={(e) => {
               setIsFocused(true);
               onFocus?.(e);

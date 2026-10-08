@@ -4,7 +4,6 @@ import { ChevronsUpDown } from 'lucide-react-native';
 import React, { forwardRef, useRef, useState } from 'react';
 import {
   Pressable,
-  Text,
   TextInput,
   View,
 } from 'react-native';
@@ -12,6 +11,7 @@ import {
   CountryPickerSheet,
   CountryPickerSheetRef,
 } from './country-picker-sheet';
+import { Text } from '@/components/ui/text';
 
 export interface PhoneInputProps {
   value: string;

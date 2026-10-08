@@ -5,10 +5,10 @@ import {
   Pressable,
   ReturnKeyTypeOptions,
   StyleSheet,
-  Text,
   TextInput,
   View,
 } from 'react-native';
+import { Text } from '@/components/ui/text';
 
 export interface DateInputProps {
   value: string;

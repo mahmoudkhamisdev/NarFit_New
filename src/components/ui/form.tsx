@@ -12,11 +12,11 @@ import {
 } from 'react-hook-form';
 import {
   StyleProp,
-  Text,
   View,
   ViewStyle,
 } from 'react-native';
 import { Shake, ShakeRef } from 'react-native-animation-kit';
+import { Text } from '@/components/ui/text';
 
 /* ================= FORM ================= */
 export const Form = FormProvider;

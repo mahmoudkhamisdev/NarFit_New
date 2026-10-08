@@ -1,22 +1,23 @@
-import { GenderSelect, PhoneInput } from '@/components/shared';
+import { GenderSelect, LocationSelect, PhoneInput } from '@/components/shared';
 import {
   Button,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
+  Icon,
   Input,
 } from '@/components/ui';
 import { COACH_AVATARS } from '@/constants/avatars';
 import { BRUSH_PATH } from '@/constants/brush-path';
 import { Country, DEFAULT_COUNTRY } from '@/constants/countries';
 import { AddClientFormValues } from '@/schemas/client';
+import { Calendar, User } from 'lucide-react-native';
 import React, { useRef, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import {
   ImageSourcePropType,
   Pressable,
-  Text,
   View,
 } from 'react-native';
 import Svg, { ClipPath, Defs, Image as SvgImage, Path } from 'react-native-svg';
@@ -24,6 +25,7 @@ import {
   AvatarSelectionSheet,
   AvatarSelectionSheetRef,
 } from '../avatar-selection-sheet';
+import { Text } from '@/components/ui/text';
 
 interface PersonalInfoStepProps {
   onContinue: () => void;
@@ -47,9 +49,8 @@ export function PersonalInfoStep({ onContinue }: PersonalInfoStepProps) {
       'gender',
       'countryCode',
       'phoneNumber',
+      'location',
       'age',
-      'weight',
-      'height',
     ]);
     if (isValid) {
       onContinue();
@@ -124,6 +125,7 @@ export function PersonalInfoStep({ onContinue }: PersonalInfoStepProps) {
                   autoCapitalize="words"
                   className="h-[74px]"
                   inputClassName="text-base font-semibold text-foreground"
+                  leftIcon={<Icon as={User} size={22} className="text-muted" />}
                   error={fieldState.error?.message}
                 />
               </FormControl>
@@ -192,6 +194,7 @@ export function PersonalInfoStep({ onContinue }: PersonalInfoStepProps) {
                   keyboardType="number-pad"
                   className="h-[74px]"
                   inputClassName="text-base font-semibold text-foreground"
+                  leftIcon={<Icon as={Calendar} size={22} className="text-muted" />}
                   error={fieldState.error?.message}
                   rightIcon={
                     <Text className="text-base font-medium text-muted">Years</Text>
@@ -203,71 +206,24 @@ export function PersonalInfoStep({ onContinue }: PersonalInfoStepProps) {
           )}
         />
 
-        {/* 5 & 6. Weight & Height side by side (Numbers only) */}
-        <View className="flex-row items-start gap-3">
-          <View className="flex-1">
-            <FormField
-              control={form.control}
-              name="weight"
-              render={({ field, fieldState }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      value={field.value !== undefined && field.value !== null ? String(field.value) : ''}
-                      onChangeText={(text) => {
-                        const clean = text.replace(/[^0-9.]/g, '');
-                        field.onChange(clean);
-                      }}
-                      onBlur={field.onBlur}
-                      placeholder="Weight"
-                      keyboardType="numeric"
-                      className="h-[74px]"
-                      inputClassName="text-base font-semibold text-foreground"
-                      error={fieldState.error?.message}
-                      rightIcon={
-                        <Text className="text-base font-medium text-muted">Kg</Text>
-                      }
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </View>
-
-          <View className="flex-1">
-            <FormField
-              control={form.control}
-              name="height"
-              render={({ field, fieldState }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      value={field.value !== undefined && field.value !== null ? String(field.value) : ''}
-                      onChangeText={(text) => {
-                        const clean = text.replace(/[^0-9.]/g, '');
-                        field.onChange(clean);
-                      }}
-                      onBlur={field.onBlur}
-                      placeholder="Height"
-                      keyboardType="numeric"
-                      className="h-[74px]"
-                      inputClassName="text-base font-semibold text-foreground"
-                      error={fieldState.error?.message}
-                      rightIcon={
-                        <Text className="text-base font-medium text-muted">Cm</Text>
-                      }
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </View>
-        </View>
+        {/* 5. Location Select Component */}
+        <FormField
+          control={form.control}
+          name="location"
+          render={({ field, fieldState }) => (
+            <FormItem>
+              <FormControl>
+                <LocationSelect
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  error={fieldState.error?.message}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       </View>
-
-
 
       {/* Continue Button */}
       <View className="pt-4">

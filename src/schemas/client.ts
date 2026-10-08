@@ -28,22 +28,40 @@ export const addClientFormSchema = z.object({
     .string()
     .trim()
     .min(6, 'Please enter a valid phone number'),
+  location: z.string().trim().min(1, 'Please select client location'),
   age: numericField('Age'),
-  weight: numericField('Weight'),
-  height: numericField('Height'),
   avatarId: z.string().optional(),
   photoUri: z.string().optional(),
 
-  // Step 2: Client Goal (39:3013)
+  // Step 2: Body Information
+  weight: numericField('Weight'),
+  height: numericField('Height'),
+
+  // Step 3: Client Goal (39:3013)
   goal: z
     .string()
     .trim()
     .min(1, 'Please select or enter client goal'),
 
-  // Step 3: Client Activity Level (39:3055)
+  // Step 4: Client Activity Level (39:3055)
   activityLevel: z
     .string()
     .min(1, 'Please select client activity level'),
+
+  // Step 5: Workout Routine & Preferences
+  workoutDays: z
+    .number()
+    .int()
+    .min(1, 'Please select workout days per week')
+    .max(7),
+  trainingLocation: z.enum(['gym', 'home', 'both']),
+
+  // Step 6: Calorie Calculation Target
+  calorieTarget: z.number().int().positive().optional(),
+
+  // Goal Target Step
+  targetWeight: numericField('Target Weight').optional(),
+  weeklyGoalRate: z.number().positive().optional(),
 });
 
 export type AddClientFormValues = z.infer<typeof addClientFormSchema>;
@@ -53,6 +71,7 @@ export const defaultAddClientValues: AddClientFormValues = {
   gender: 'male',
   countryCode: '+20',
   phoneNumber: '',
+  location: '',
   age: '',
   weight: '',
   height: '',
@@ -60,6 +79,11 @@ export const defaultAddClientValues: AddClientFormValues = {
   photoUri: '',
   goal: 'lose-weight',
   activityLevel: 'sedentary',
+  workoutDays: 4,
+  trainingLocation: 'gym',
+  calorieTarget: 2150,
+  targetWeight: '75',
+  weeklyGoalRate: 0.5,
 };
 
 /**

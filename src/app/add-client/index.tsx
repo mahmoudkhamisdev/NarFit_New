@@ -16,17 +16,13 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Text,
   View,
 } from 'react-native';
 import { FadeSlideIn } from 'react-native-animation-kit';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AddClientStepper } from '@/components/features/add-client/stepper';
-import {
-  ActivityStep,
-  GoalStep,
-  PersonalInfoStep,
-} from '@/components/features/add-client/steps';
+import { Text } from '@/components/ui/text';
+import { ActivityStep, BodyInfoStep, CalorieCalculationStep, GoalStep, GoalTargetStep, PersonalInfoStep, WorkoutRoutineStep } from '@/components/features/add-client/steps';
 
 export default function AddClientScreen() {
   const insets = useSafeAreaInsets();
@@ -78,7 +74,27 @@ export default function AddClientScreen() {
     setCurrentStep(3);
   };
 
-  // Final submission handler on step 3
+  const handleGoToStep4 = () => {
+    setDirection('right');
+    setCurrentStep(4);
+  };
+
+  const handleGoToStep5 = () => {
+    setDirection('right');
+    setCurrentStep(5);
+  };
+
+  const handleGoToStep6 = () => {
+    setDirection('right');
+    setCurrentStep(6);
+  };
+
+  const handleGoToStep7 = () => {
+    setDirection('right');
+    setCurrentStep(7);
+  };
+
+  // Final submission handler
   const handleFinalSubmit = form.handleSubmit(async (formData) => {
     try {
       setIsSubmitting(true);
@@ -89,6 +105,10 @@ export default function AddClientScreen() {
         age: Number(formData.age),
         weight: Number(formData.weight),
         height: Number(formData.height),
+        workoutDays: Number(formData.workoutDays),
+        calorieTarget: Number(formData.calorieTarget || 2150),
+        targetWeight: formData.targetWeight ? String(formData.targetWeight) : undefined,
+        weeklyGoalRate: Number(formData.weeklyGoalRate || 0.5),
       };
 
       // Navigate to success screen, replacing the add-client wizard in the history stack
@@ -112,10 +132,24 @@ export default function AddClientScreen() {
       case 1:
         return <PersonalInfoStep onContinue={handleGoToStep2} />;
       case 2:
-        return <GoalStep onContinue={handleGoToStep3} />;
+        return <BodyInfoStep onContinue={handleGoToStep3} />;
       case 3:
+        return <GoalStep onContinue={handleGoToStep4} />;
+      case 4:
+        return <ActivityStep onContinue={handleGoToStep5} />;
+      case 5:
+        return <WorkoutRoutineStep onContinue={handleGoToStep6} />;
+      case 6:
         return (
-          <ActivityStep
+          <CalorieCalculationStep
+            isSubmitting={isSubmitting}
+            submitError={submitError}
+            onSubmit={handleGoToStep7}
+          />
+        );
+      case 7:
+        return (
+          <GoalTargetStep
             isSubmitting={isSubmitting}
             submitError={submitError}
             onSubmit={handleFinalSubmit}

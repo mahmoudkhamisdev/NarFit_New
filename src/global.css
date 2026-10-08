@@ -1,6 +1,14 @@
 @import 'tailwindcss';
 @import 'uniwind';
 
+@theme {
+  --font-sans: 'RightGrotesk-Regular';
+  --font-regular: 'RightGrotesk-Regular';
+  --font-medium: 'RightGrotesk-Medium';
+  --font-bold: 'RightGrotesk-Bold';
+  --font-black: 'RightGrotesk-Black';
+}
+
 @layer theme {
   :root {
     @variant dark {

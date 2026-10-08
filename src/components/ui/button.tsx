@@ -4,9 +4,9 @@ import {
   GestureResponderEvent,
   Pressable,
   PressableProps,
-  Text,
   View,
 } from 'react-native';
+import { Text } from './text';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'default' | 'outline' | 'ghost';
 export type ButtonSize = 'sm' | 'md' | 'lg';

@@ -5,10 +5,10 @@ import {
   Pressable,
   ScrollView,
   StyleProp,
-  Text,
   View,
   ViewStyle,
 } from 'react-native';
+import { Text } from '@/components/ui/text';
 
 export interface FilterTabItem<T extends string = string> {
   id: T;
@@ -127,25 +127,22 @@ export function FilterTabs<T extends string = string>({
             className="z-10 h-8 flex-row items-center justify-center gap-1.5 px-3.5 rounded-full active:opacity-75"
           >
             <Text
-              className={`text-sm ${
-                isActive
+              className={`text-sm ${isActive
                   ? 'font-semibold text-brand'
                   : 'font-medium text-muted'
-              }`}
+                }`}
             >
               {tab.label}
             </Text>
 
             {tab.count !== undefined && tab.count > 0 && (
               <View
-                className={`h-4 min-w-[18px] px-1 rounded-full items-center justify-center ${
-                  isActive ? 'bg-brand/25' : 'bg-surface'
-                }`}
+                className={`h-4 min-w-[18px] px-1 rounded-full items-center justify-center ${isActive ? 'bg-brand/25' : 'bg-surface'
+                  }`}
               >
                 <Text
-                  className={`text-[10px] font-bold ${
-                    isActive ? 'text-brand' : 'text-muted'
-                  }`}
+                  className={`text-[10px] font-bold ${isActive ? 'text-brand' : 'text-muted'
+                    }`}
                 >
                   {tab.count}
                 </Text>

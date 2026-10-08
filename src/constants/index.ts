@@ -6,3 +6,4 @@ export * from './dashboard';
 export * from './notifications';
 export * from './clients';
 export * from './onboarding';
+export * from './locations';

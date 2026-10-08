@@ -19,7 +19,7 @@ import {
   ClientsSearchFilter,
 } from '@/components/features/clients';
 
-export default function ClientsScreen() {
+export default function DashboardClientsScreen() {
   const insets = useSafeAreaInsets();
   const [clients, setClients] = useState<ClientItem[]>(MOCK_CLIENTS);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -104,8 +104,7 @@ export default function ClientsScreen() {
 
     Alert.alert(
       'Delete Clients',
-      `Are you sure you want to remove ${selectedIds.size} client${
-        selectedIds.size > 1 ? 's' : ''
+      `Are you sure you want to remove ${selectedIds.size} client${selectedIds.size > 1 ? 's' : ''
       }?`,
       [
         { text: 'Cancel', style: 'cancel' },
@@ -141,7 +140,7 @@ export default function ClientsScreen() {
 
       {/* Screen Header Area */}
       <View
-        className="px-5 pb-3"
+        className="px-4 pb-3"
         style={{ paddingTop: insets.top + 12 }}
       >
         <ClientsHeader
@@ -167,9 +166,9 @@ export default function ClientsScreen() {
         data={filteredClients}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{
-          paddingTop: 12,
-          paddingHorizontal: 20,
-          paddingBottom: isSelectionMode ? insets.bottom + 95 : insets.bottom + 32,
+          paddingTop: 8,
+          paddingHorizontal: 16,
+          paddingBottom: isSelectionMode ? insets.bottom + 120 : insets.bottom + 100,
           gap: 12,
         }}
         showsVerticalScrollIndicator={false}

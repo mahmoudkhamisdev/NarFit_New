@@ -4,9 +4,9 @@ import { Bell } from 'lucide-react-native';
 import React from 'react';
 import {
   Pressable,
-  Text,
   View,
 } from 'react-native';
+import { Text } from '@/components/ui/text';
 
 export interface DashboardHeaderProps {
   coachName?: string;

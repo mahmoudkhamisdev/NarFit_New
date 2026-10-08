@@ -4,10 +4,10 @@ import {
   Modal,
   Pressable,
   ScrollView,
-  Text,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import { Text } from '@/components/ui/text';
 
 import { Icon } from './icon';
 

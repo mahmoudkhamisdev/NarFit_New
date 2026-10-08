@@ -8,7 +8,11 @@
     "scheme": "narfitexpo",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "bundleIdentifier": "com.narfit.app",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "com.narfit.app",
@@ -22,12 +26,13 @@
       "softwareKeyboardLayoutMode": "resize"
     },
     "web": {
-      "output": "static",
+      "output": "single",
       "favicon": "./assets/images/favicon.png"
     },
     "updates": {
       "checkAutomatically": "ON_LOAD",
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/1fec8576-dc7f-4e85-bdad-37468c7ff4ac"
     },
     "runtimeVersion": {
       "policy": "appVersion"
@@ -37,16 +42,28 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#0B1E16",
+          "backgroundColor": "#759900",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 80,
+          "imageWidth": 120,
+          "resizeMode": "contain",
           "dark": {
-            "backgroundColor": "#06140D",
+            "backgroundColor": "#caff2e",
             "image": "./assets/images/splash-icon.png"
           }
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/RightGrotesk-Regular.otf",
+            "./assets/fonts/RightGrotesk-Medium.otf",
+            "./assets/fonts/RightGrotesk-Bold.otf",
+            "./assets/fonts/RightGrotesk-Black.otf"
+          ]
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

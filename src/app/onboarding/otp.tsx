@@ -9,10 +9,10 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Text } from '@/components/ui/text';
 
 const greenBg = require('@/assets/images/on-boarding/green-bg.png');
 

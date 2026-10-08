@@ -9,11 +9,11 @@ import {
   Image,
   Pressable,
   ScrollView,
-  Text,
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import BackButton from '@/components/features/onboarding/back-button';
+import { Text } from '@/components/ui/text';
 
 const correctMarkImg = require('@/assets/images/all-set/correct-mark.png');
 const lensImg = require('@/assets/images/all-set/lens.png');

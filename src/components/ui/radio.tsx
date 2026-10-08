@@ -2,9 +2,9 @@ import React, { createContext, useContext, useState } from 'react';
 import {
   Pressable,
   PressableProps,
-  Text,
   View,
 } from 'react-native';
+import { Text } from '@/components/ui/text';
 
 interface RadioGroupContextType {
   value?: string;

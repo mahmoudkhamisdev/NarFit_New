@@ -20,11 +20,11 @@ import React from 'react';
 import {
   Pressable,
   ScrollView,
-  Text,
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DashboardHeader, DashboardScrollView } from '@/components/features/dashboard';
+import { Text } from '@/components/ui/text';
 
 export default function DashboardScreen() {
   const insets = useSafeAreaInsets();
@@ -39,7 +39,7 @@ export default function DashboardScreen() {
       <DashboardScrollView
         contentContainerStyle={{
           paddingTop: insets.top + 16,
-          paddingHorizontal: 20,
+          paddingHorizontal: 16,
         }}
       >
         {/* Header: Greeting & Quick Profile */}

@@ -2,10 +2,10 @@ import { Image, ImageSource } from 'expo-image';
 import { User } from 'lucide-react-native';
 import React, { Children, cloneElement, isValidElement, useState } from 'react';
 import {
-  Text,
   View,
   ViewProps,
 } from 'react-native';
+import { Text } from '@/components/ui/text';
 
 import { Icon } from './icon';
 

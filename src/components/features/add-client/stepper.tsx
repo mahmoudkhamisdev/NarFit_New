@@ -6,7 +6,7 @@ export interface AddClientStepperProps {
   totalSteps?: number;
 }
 
-export function AddClientStepper({ currentStep, totalSteps = 4 }: AddClientStepperProps) {
+export function AddClientStepper({ currentStep, totalSteps = 7 }: AddClientStepperProps) {
   return (
     <View className="flex-row items-center gap-2.5 pt-4 pb-2">
       {Array.from({ length: totalSteps }).map((_, index) => {

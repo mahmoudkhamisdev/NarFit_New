@@ -3,10 +3,10 @@ import {
   Pressable,
   PressableProps,
   StyleProp,
-  Text,
   View,
   ViewStyle,
 } from 'react-native';
+import { Text } from '@/components/ui/text';
 
 export type TagStyle = 'brand' | 'default' | 'error' | 'success' | 'warning' | 'info';
 export type TagSize = 'xs' | 'sm' | 'md';

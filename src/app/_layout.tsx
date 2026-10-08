@@ -1,30 +1,44 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { THEME_STORAGE_KEY, ThemeTransitionProvider } from '@/lib/theme';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { Stack } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import * as SplashScreen from 'expo-splash-screen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { AnimatedSplashScreen } from '@/components/splash';
+import { isExpoGo, useAppFonts, useAppUpdates } from '@/hook';
 import '../global.css';
+import { useResolveClassNames } from 'uniwind';
 
-// Keep native splash screen visible until our custom animated splash mounts
-SplashScreen.preventAutoHideAsync().catch(() => {});
+// Keep native splash screen visible until initialization and updates check complete
+SplashScreen.preventAutoHideAsync().catch(() => { });
 
-export default function RootLayout() {
-  const [splashVisible, setSplashVisible] = useState(true);
-  let theme;
-  try {
-    theme = SecureStore.getItem(THEME_STORAGE_KEY) as any;
-  } catch (error) {
-    console.log(error);
-  }
+// Configure smooth fade transition for standalone/production builds
+if (!isExpoGo) {
+  SplashScreen.setOptions({
+    duration: 400,
+    fade: true,
+  });
+}
+
+function RootLayoutContent({ theme }: { theme: any }) {
+  const resolvedStyle = useResolveClassNames('text-background');
+  const backgroundColor =
+    (resolvedStyle?.backgroundColor as string) ??
+    (resolvedStyle?.color as string) ??
+    '#000000';
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor }}>
       <ThemeTransitionProvider initialTheme={theme ?? 'system'}>
         <BottomSheetModalProvider>
-          <Stack screenOptions={{ headerShown: false }}>
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              animation: 'fade',
+              animationDuration: 250,
+              contentStyle: { backgroundColor },
+            }}
+          >
             <Stack.Screen name="index" />
             <Stack.Screen name="onboarding/welcome" />
             <Stack.Screen name="onboarding/signup-phone" />
@@ -40,15 +54,45 @@ export default function RootLayout() {
               options={{ gestureEnabled: false }}
             />
             <Stack.Screen name="notifications/index" />
-            <Stack.Screen name="clients/index" />
           </Stack>
-
-          {splashVisible && (
-            <AnimatedSplashScreen onFinish={() => setSplashVisible(false)} />
-          )}
         </BottomSheetModalProvider>
       </ThemeTransitionProvider>
     </GestureHandlerRootView>
   );
 }
 
+export default function RootLayout() {
+  const { fontsLoaded, fontError } = useAppFonts();
+  const { checkForUpdates } = useAppUpdates();
+
+  let theme;
+  try {
+    theme = SecureStore.getItem(THEME_STORAGE_KEY) as any;
+  } catch (error) {
+    console.log(error);
+  }
+
+  useEffect(() => {
+    async function prepareApp() {
+      try {
+        await checkForUpdates();
+      } catch (error) {
+        console.warn('Error during app updates check:', error);
+      } finally {
+        if (fontsLoaded || fontError) {
+          await SplashScreen.hideAsync().catch(() => { });
+        }
+      }
+    }
+
+    if (fontsLoaded || fontError) {
+      prepareApp();
+    }
+  }, [fontsLoaded, fontError, checkForUpdates]);
+
+  if (!fontsLoaded && !fontError) {
+    return null;
+  }
+
+  return <RootLayoutContent theme={theme} />;
+}

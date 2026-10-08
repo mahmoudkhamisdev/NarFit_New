@@ -1,5 +1,6 @@
 import React from 'react';
-import { Text, TextProps, View, ViewProps } from 'react-native';
+import { View, ViewProps } from 'react-native';
+import { Text, TextProps } from './text';
 
 export interface CardProps extends ViewProps {
   className?: string;

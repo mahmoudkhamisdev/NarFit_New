@@ -1,10 +1,10 @@
 import React, { forwardRef, useState } from 'react';
 import {
-  Text,
   TextInput,
   TextInputProps,
   View,
 } from 'react-native';
+import { Text } from './text';
 
 export interface TextareaProps extends TextInputProps {
   label?: string;
@@ -96,6 +96,7 @@ export const Textarea = forwardRef<TextInput, TextareaProps>(
             textAlignVertical="top"
             placeholderTextColor="#737373"
             className={`flex-1 text-base leading-6 text-foreground ${inputClassName}`}
+            style={[{ fontFamily: 'RightGrotesk-Regular' }, rest.style]}
             value={value}
             defaultValue={defaultValue}
             onChangeText={handleTextChange}

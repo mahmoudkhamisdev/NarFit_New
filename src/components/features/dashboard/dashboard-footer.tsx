@@ -1,5 +1,5 @@
 import { Button, Icon } from '@/components/ui';
-import { router } from 'expo-router';
+import { router, usePathname } from 'expo-router';
 import {
   Apple,
   Home,
@@ -7,15 +7,15 @@ import {
   Plus,
   Users,
 } from 'lucide-react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Animated,
   LayoutChangeEvent,
   Pressable,
-  Text,
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Text } from '@/components/ui/text';
 
 export type DashboardTab = 'home' | 'clients' | 'plans';
 
@@ -43,27 +43,36 @@ export function DashboardFooter({
   onAddPress,
 }: DashboardFooterProps) {
   const insets = useSafeAreaInsets();
-  const [activeTab, setActiveTab] = useState<DashboardTab>(initialTab);
-  const [containerWidth, setContainerWidth] = useState<number>(0);
-
-  const initialIndex = Math.max(
+  const pathname = usePathname();
+  const activeTab: DashboardTab = pathname.includes('/clients')
+    ? 'clients'
+    : pathname.includes('/plans')
+      ? 'plans'
+      : 'home';
+  const activeIndex = Math.max(
     0,
-    TABS.findIndex((t) => t.id === initialTab)
+    TABS.findIndex((t) => t.id === activeTab)
   );
-  const [slideAnim] = useState(() => new Animated.Value(initialIndex));
 
-  const handleTabPress = (tab: DashboardTab, index: number) => {
-    setActiveTab(tab);
+  const [containerWidth, setContainerWidth] = useState<number>(0);
+  const [slideAnim] = useState(() => new Animated.Value(activeIndex));
+
+  useEffect(() => {
     Animated.spring(slideAnim, {
-      toValue: index,
+      toValue: activeIndex,
       useNativeDriver: true,
       bounciness: 4,
       speed: 14,
     }).start();
+  }, [activeIndex, slideAnim]);
+
+  const handleTabPress = (tab: DashboardTab, index: number) => {
     if (onTabChange) {
       onTabChange(tab);
     } else if (tab === 'clients') {
-      router.push('/clients' as any);
+      router.replace('/dashboard/clients' as any);
+    } else if (tab === 'home') {
+      router.replace('/dashboard' as any);
     }
   };
 
@@ -114,7 +123,7 @@ export function DashboardFooter({
                   },
                 ],
               }}
-              className="rounded-full bg-brand shadow-sm"
+              className="rounded-full bg-foreground shadow-sm"
             />
           )}
 
@@ -135,9 +144,8 @@ export function DashboardFooter({
                   className={isActive ? 'text-inverse' : 'text-muted'}
                 />
                 <Text
-                  className={`mt-0.5 text-[11px] ${
-                    isActive ? 'font-bold text-inverse' : 'font-medium text-muted'
-                  }`}
+                  className={`mt-0.5 text-[11px] ${isActive ? 'font-bold text-inverse' : 'font-medium text-muted'
+                    }`}
                 >
                   {tab.label}
                 </Text>

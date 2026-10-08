@@ -25,6 +25,10 @@ function Icon({ as: IconComponent, className, size, color, ...props }: IconProps
   const resolvedSize = size ?? (resolvedStyle?.height as number) ?? (resolvedStyle?.width as number) ?? 24;
   const resolvedColor = color ?? (resolvedStyle?.color as string) ?? 'black';
 
+  if (!IconComponent) {
+    return null;
+  }
+
   return (
     <IconComponent
       size={resolvedSize}
