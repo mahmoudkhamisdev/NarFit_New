@@ -4,6 +4,7 @@ import {
   TextInputProps,
   View,
 } from 'react-native';
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { Text } from './text';
 
 export interface InputProps extends TextInputProps {
@@ -13,6 +14,7 @@ export interface InputProps extends TextInputProps {
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   required?: boolean;
+  asBottomSheetInput?: boolean;
   className?: string;
   containerClassName?: string;
   inputClassName?: string;
@@ -28,6 +30,7 @@ export const Input = forwardRef<TextInput, InputProps>(
       leftIcon,
       rightIcon,
       required = false,
+      asBottomSheetInput = false,
       className = '',
       containerClassName = '',
       inputClassName = '',
@@ -39,6 +42,7 @@ export const Input = forwardRef<TextInput, InputProps>(
     },
     ref
   ) => {
+    const Component = asBottomSheetInput ? BottomSheetTextInput : TextInput;
     const [isFocused, setIsFocused] = useState(false);
 
     const isError = Boolean(error);
@@ -73,25 +77,27 @@ export const Input = forwardRef<TextInput, InputProps>(
         )}
 
         <View
-          className={`h-14 w-full flex-row items-center rounded-2xl px-4 gap-3 ${getFieldStateClasses()} ${className}`}
+          className={`${
+            className.includes('h-') ? '' : 'h-14'
+          } w-full flex-row items-center rounded-2xl px-4 gap-3 ${getFieldStateClasses()} ${className}`}
         >
-          {leftIcon && <View className="items-center justify-center">{leftIcon}</View>}
+          {leftIcon && <View className="items-center justify-center pb-1">{leftIcon}</View>}
 
-          <TextInput
-            ref={ref}
+          <Component
+            ref={ref as any}
             editable={editable}
             placeholderTextColor="#737373"
             className={`flex-1 text-base text-foreground ${inputClassName}`}
             style={[{ fontFamily: 'RightGrotesk-Regular' }, rest.style]}
-            onFocus={(e) => {
+            onFocus={(e: any) => {
               setIsFocused(true);
               onFocus?.(e);
             }}
-            onBlur={(e) => {
+            onBlur={(e: any) => {
               setIsFocused(false);
               onBlur?.(e);
             }}
-            {...rest}
+            {...(rest as any)}
           />
 
           {rightIcon && <View className="items-center justify-center">{rightIcon}</View>}

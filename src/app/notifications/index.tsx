@@ -20,6 +20,7 @@ import {
 
 export default function NotificationsScreen() {
   const insets = useSafeAreaInsets();
+  // TODO: API - Fetch notifications: GET /api/notifications
   const [notifications, setNotifications] = useState<NotificationItem[]>(MOCK_NOTIFICATIONS);
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'unread'>('all');
   const [isSelectionMode, setIsSelectionMode] = useState<boolean>(false);
@@ -84,6 +85,7 @@ export default function NotificationsScreen() {
   // Multi-Read: Mark all selected notifications as read
   const handleMarkSelectedAsRead = () => {
     if (selectedIds.size === 0) return;
+    // TODO: API - Mark notifications as read: PATCH /api/notifications/read (payload: Array.from(selectedIds))
     setNotifications((prev) =>
       prev.map((item) =>
         selectedIds.has(item.id) ? { ...item, read: true } : item
@@ -108,6 +110,7 @@ export default function NotificationsScreen() {
           text: 'Delete',
           style: 'destructive',
           onPress: () => {
+            // TODO: API - Delete notifications: DELETE /api/notifications (payload: Array.from(selectedIds))
             setNotifications((prev) =>
               prev.filter((item) => !selectedIds.has(item.id))
             );

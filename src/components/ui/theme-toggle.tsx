@@ -1,55 +1,42 @@
+import { Icon } from './icon';
 import { Moon, Sun } from 'lucide-react-native';
-import React, { useRef } from 'react';
-import { Pressable, View } from 'react-native';
-import { Easing } from 'react-native-reanimated';
-import type { TransitionType } from 'react-native-theme-transition';
-import { useTheme } from '@/lib/theme';
+import React from 'react';
+import { Pressable } from 'react-native';
+import { Uniwind, useUniwind } from 'uniwind';
 
 export interface ThemeToggleProps {
-  duration?: number;
-  transition?: TransitionType;
   size?: number;
-  children?: React.ReactNode | ((isDark: boolean) => React.ReactNode);
   className?: string;
+  iconClassName?: string;
 }
 
 export function ThemeToggle({
-  duration = 900,
-  transition = 'circularReveal',
-  size = 22,
-  children,
-  className = 'h-12 w-12 rounded-2xl bg-brand',
+  size = 20,
+  className = 'h-10 w-10 items-center justify-center rounded-2xl bg-card border border-border active:opacity-75',
+  iconClassName = 'text-foreground',
 }: ThemeToggleProps) {
-  const { theme, setTheme, isTransitioning } = useTheme();
-  const isDark = theme.scheme === 'dark';
-  const ref = useRef<View>(null);
+  const { theme } = useUniwind();
+  const isDark = theme === 'dark';
 
-  const onPress = () => {
-    if (isTransitioning) return;
-    setTheme(isDark ? 'light' : 'dark', {
-      transition,
-      origin: ref as React.RefObject<View | null>,
-      duration,
-      inverted: isDark,
-      easing: Easing.inOut(Easing.cubic),
-    });
+  const toggleTheme = () => {
+    Uniwind.setTheme(isDark ? 'light' : 'dark');
   };
 
   return (
     <Pressable
-      ref={ref}
-      onPress={onPress}
-      disabled={isTransitioning}
-      style={{ opacity: 1 }}
-      className={`items-center justify-center ${className}`}
+      onPress={toggleTheme}
+      hitSlop={8}
+      className={className}
       accessibilityRole="button"
       accessibilityLabel={`Switch to ${isDark ? 'light' : 'dark'} theme`}
     >
-      {typeof children === 'function'
-        ? children(isDark)
-        : children ?? (isDark
-            ? <Sun size={size} color="#000000" strokeWidth={2} />
-            : <Moon size={size} color="#ffffff" strokeWidth={2} />)}
+      <Icon
+        as={isDark ? Sun : Moon}
+        size={size}
+        className={iconClassName}
+      />
     </Pressable>
   );
 }
+
+export default ThemeToggle;

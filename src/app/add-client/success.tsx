@@ -13,7 +13,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '@/components/ui/text';
 
-const clientSuccessImg = require('@/assets/images/all-set/client-added.png');
+const clientSuccessImg = require('@/assets/images/all-set/client-added.webp');
 
 export default function ClientAddedSuccessScreen() {
   const insets = useSafeAreaInsets();

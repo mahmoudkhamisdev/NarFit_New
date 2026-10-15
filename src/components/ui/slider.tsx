@@ -1,7 +1,8 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  GestureResponderEvent,
   LayoutChangeEvent,
+  PanResponder,
+  Text,
   View,
   ViewStyle,
 } from 'react-native';
@@ -27,7 +28,7 @@ export interface SliderProps {
   trackHeight?: number;
   /** Thumb diameter in px (default: 28) */
   thumbSize?: number;
-  /** Track background className (default: 'bg-card-subtle border border-border/80') */
+  /** Track background className (default: 'bg-card border border-border/80') */
   trackClassName?: string;
   /** Active filled bar className (default: 'bg-brand') */
   activeTrackClassName?: string;
@@ -35,6 +36,10 @@ export interface SliderProps {
   thumbClassName?: string;
   /** Active fill color override (e.g. custom hex if not using Tailwind class) */
   activeColor?: string;
+  /** Whether to show a percentage badge above the thumb (matching Figma design) */
+  showPercentage?: boolean;
+  /** Custom formatter for the percentage badge */
+  formatPercentage?: (value: number, ratio: number) => string;
   /** Optional custom node rendered directly above the thumb (follows thumb horizontally) */
   renderAboveThumb?: (props: { value: number; ratio: number }) => React.ReactNode;
   /** Optional custom thumb node */
@@ -58,123 +63,186 @@ export function Slider({
   activeTrackClassName = '',
   thumbClassName = '',
   activeColor,
+  showPercentage = false,
+  formatPercentage,
   renderAboveThumb,
   renderThumb,
   style,
 }: SliderProps) {
   const [trackWidth, setTrackWidth] = useState(0);
-  const trackRef = useRef<View>(null);
-  const trackLayoutRef = useRef<{ pageX: number; width: number }>({ pageX: 0, width: 0 });
 
-  const updateValueFromPageX = (pageX: number) => {
-    const { pageX: trackX, width } = trackLayoutRef.current;
-    if (width <= 0) return;
+  const stateRef = useRef({
+    min,
+    max,
+    step,
+    value,
+    disabled,
+    onValueChange,
+    onSlidingComplete,
+    trackWidth: 0,
+    sliderPageX: 0,
+  });
 
-    const relativeX = pageX - trackX;
-    const ratio = Math.max(0, Math.min(1, relativeX / width));
-    const rawVal = min + ratio * (max - min);
+  useEffect(() => {
+    stateRef.current.min = min;
+    stateRef.current.max = max;
+    stateRef.current.step = step;
+    stateRef.current.value = value;
+    stateRef.current.disabled = disabled;
+    stateRef.current.onValueChange = onValueChange;
+    stateRef.current.onSlidingComplete = onSlidingComplete;
+  }, [min, max, step, value, disabled, onValueChange, onSlidingComplete]);
 
-    let finalVal = rawVal;
-    if (step && step > 0) {
-      finalVal = Math.round(rawVal / step) * step;
-      const decimals = (step.toString().split('.')[1] || '').length;
-      finalVal = parseFloat(finalVal.toFixed(decimals));
-    }
+  const panResponder = useMemo(
+    () =>
+      // eslint-disable-next-line react-hooks/refs
+      PanResponder.create({
+        onStartShouldSetPanResponder: () => !stateRef.current.disabled,
+        onStartShouldSetPanResponderCapture: () => !stateRef.current.disabled,
+        onMoveShouldSetPanResponder: () => !stateRef.current.disabled,
+        onMoveShouldSetPanResponderCapture: () => !stateRef.current.disabled,
+        onPanResponderTerminationRequest: () => false,
+        onPanResponderGrant: (evt) => {
+          if (stateRef.current.disabled) return;
+          const { pageX, locationX } = evt.nativeEvent;
+          stateRef.current.sliderPageX = pageX - locationX;
 
-    finalVal = Math.max(min, Math.min(max, finalVal));
-    onValueChange(finalVal);
-  };
+          const { trackWidth: width, min: minVal, max: maxVal, step: stepVal, onValueChange: onChange } = stateRef.current;
+          if (width <= 0) return;
 
-  const handleTouch = (evt: GestureResponderEvent) => {
-    if (disabled) return;
-    updateValueFromPageX(evt.nativeEvent.pageX);
-  };
+          const ratio = Math.max(0, Math.min(1, locationX / width));
+          const rawVal = minVal + ratio * (maxVal - minVal);
+          let finalVal = rawVal;
+          if (stepVal && stepVal > 0) {
+            finalVal = Math.round(rawVal / stepVal) * stepVal;
+            const decimals = (stepVal.toString().split('.')[1] || '').length;
+            finalVal = parseFloat(finalVal.toFixed(decimals));
+          }
+          onChange(Math.max(minVal, Math.min(maxVal, finalVal)));
+        },
+        onPanResponderMove: (evt) => {
+          if (stateRef.current.disabled) return;
+          const { pageX } = evt.nativeEvent;
+          const currentX = pageX - stateRef.current.sliderPageX;
 
-  const handleGrant = (evt: GestureResponderEvent) => {
-    if (disabled) return;
-    trackRef.current?.measure((_x, _y, width, _height, pageX) => {
-      if (width > 0) {
-        trackLayoutRef.current = { pageX, width };
-        setTrackWidth(width);
-      }
-    });
-    updateValueFromPageX(evt.nativeEvent.pageX);
-  };
+          const { trackWidth: width, min: minVal, max: maxVal, step: stepVal, onValueChange: onChange } = stateRef.current;
+          if (width <= 0) return;
 
-  const handleRelease = () => {
-    if (disabled) return;
-    onSlidingComplete?.(value);
-  };
+          const ratio = Math.max(0, Math.min(1, currentX / width));
+          const rawVal = minVal + ratio * (maxVal - minVal);
+          let finalVal = rawVal;
+          if (stepVal && stepVal > 0) {
+            finalVal = Math.round(rawVal / stepVal) * stepVal;
+            const decimals = (stepVal.toString().split('.')[1] || '').length;
+            finalVal = parseFloat(finalVal.toFixed(decimals));
+          }
+          onChange(Math.max(minVal, Math.min(maxVal, finalVal)));
+        },
+        onPanResponderRelease: () => {
+          if (stateRef.current.disabled) return;
+          stateRef.current.onSlidingComplete?.(stateRef.current.value);
+        },
+        onPanResponderTerminate: () => {
+          if (stateRef.current.disabled) return;
+          stateRef.current.onSlidingComplete?.(stateRef.current.value);
+        },
+      }),
+    []
+  );
 
   const handleLayout = (e: LayoutChangeEvent) => {
     const w = e.nativeEvent.layout.width;
-    setTrackWidth(w);
-    trackRef.current?.measure((_x, _y, width, _height, pageX) => {
-      trackLayoutRef.current = { pageX, width: width || w };
-    });
+    if (w > 0) {
+      setTrackWidth(w);
+      stateRef.current.trackWidth = w;
+    }
   };
 
-  // Safe normalized ratio for visual rendering
   const clampedValue = Math.max(min, Math.min(max, value));
   const ratio = max > min ? (clampedValue - min) / (max - min) : 0;
 
-  // Available horizontal travel distance for thumb
   const travelWidth = Math.max(0, trackWidth - thumbSize);
   const thumbLeft = trackWidth > 0 ? ratio * travelWidth : 0;
+  const activeWidth = trackWidth > 0 ? thumbLeft + thumbSize / 2 : 0;
+  const containerHeight = Math.max(thumbSize, trackHeight) + 12;
 
   return (
-    <View className={`w-full ${className}`} style={style}>
-      {/* Optional above-thumb node (e.g. tooltip, tag) */}
-      {renderAboveThumb && trackWidth > 0 && (
+    <View className={`w-full ${showPercentage && !renderAboveThumb ? 'pt-6' : ''} ${className}`} style={style}>
+      {/* Optional above-thumb node (e.g. tooltip, tag, percentage badge) */}
+      {(renderAboveThumb || showPercentage) && trackWidth > 0 && (
         <View
           style={{
             position: 'absolute',
             left: thumbLeft + thumbSize / 2,
-            top: 0,
-            transform: [{ translateX: -thumbSize / 2 }],
+            top: showPercentage && !renderAboveThumb ? 0 : 0,
+            transform: [{ translateX: -18 }],
             zIndex: 10,
           }}
           pointerEvents="none"
         >
-          {renderAboveThumb({ value: clampedValue, ratio })}
+          {renderAboveThumb ? (
+            renderAboveThumb({ value: clampedValue, ratio })
+          ) : (
+            <View
+              className="items-center"
+              style={{
+                transform: [{ rotate: '-8.7deg' }],
+              }}
+            >
+              <View className="bg-brand px-1.5 py-0.5 rounded-[5px] items-center justify-center min-w-[34px] shadow-sm">
+                <Text className="text-[10px] font-bold text-inverse text-center">
+                  {formatPercentage
+                    ? formatPercentage(clampedValue, ratio)
+                    : `${Math.round(ratio * 100)}%`}
+                </Text>
+              </View>
+              <View
+                style={{
+                  width: 0,
+                  height: 0,
+                  borderLeftWidth: 3.5,
+                  borderRightWidth: 3.5,
+                  borderTopWidth: 4.5,
+                  borderStyle: 'solid',
+                  borderLeftColor: 'transparent',
+                  borderRightColor: 'transparent',
+                }}
+                className="border-t-brand"
+              />
+            </View>
+          )}
         </View>
       )}
 
-      {/* Touch Interaction Container */}
+      {/* Touch Interaction Container with Global Pan Tracking */}
       <View
-        ref={trackRef}
         collapsable={false}
         onLayout={handleLayout}
-        onStartShouldSetResponder={() => !disabled}
-        onMoveShouldSetResponder={() => !disabled}
-        onResponderGrant={handleGrant}
-        onResponderMove={handleTouch}
-        onResponderRelease={handleRelease}
-        onResponderTerminate={handleRelease}
+        {...panResponder.panHandlers}
         style={{
           width: '100%',
-          height: Math.max(thumbSize, trackHeight) + 8,
+          height: containerHeight,
           justifyContent: 'center',
         }}
         accessibilityRole="adjustable"
         accessibilityValue={{ min, max, now: clampedValue }}
       >
-        {/* Inactive Track Background: uses global.css tokens --color-card-subtle and --color-border */}
+        {/* Track Background */}
         <View
+          pointerEvents="none"
           style={{
             width: '100%',
             height: trackHeight,
             borderRadius: trackHeight / 2,
           }}
-          className={`bg-card-subtle border border-border/80 overflow-hidden ${trackClassName}`}
+          className={`bg-card border border-border/80 overflow-hidden ${trackClassName}`}
         >
-          {/* Active Filled Bar: uses global.css token --color-brand */}
+          {/* Active Filled Bar */}
           <View
             style={[
               {
-                width: `${Math.round(ratio * 100)}%`,
+                width: trackWidth > 0 ? activeWidth : `${Math.round(ratio * 100)}%`,
                 height: '100%',
-                borderRadius: trackHeight / 2,
               },
               activeColor ? { backgroundColor: activeColor } : undefined,
             ]}
@@ -182,12 +250,14 @@ export function Slider({
           />
         </View>
 
-        {/* Thumb: uses global.css token --color-foreground */}
+        {/* Thumb */}
         {trackWidth > 0 && (
           <View
+            pointerEvents="none"
             className={`absolute bg-foreground rounded-full shadow-lg ${thumbClassName}`}
             style={{
               left: thumbLeft,
+              top: (containerHeight - thumbSize) / 2,
               width: thumbSize,
               height: thumbSize,
             }}

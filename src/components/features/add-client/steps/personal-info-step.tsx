@@ -47,10 +47,10 @@ export function PersonalInfoStep({ onContinue }: PersonalInfoStepProps) {
     const isValid = await form.trigger([
       'name',
       'gender',
+      'age',
       'countryCode',
       'phoneNumber',
       'location',
-      'age',
     ]);
     if (isValid) {
       onContinue();
@@ -152,31 +152,7 @@ export function PersonalInfoStep({ onContinue }: PersonalInfoStepProps) {
           )}
         />
 
-        {/* 3. Phone Input Component */}
-        <FormField
-          control={form.control}
-          name="phoneNumber"
-          render={({ field, fieldState }) => (
-            <FormItem>
-              <FormControl>
-                <PhoneInput
-                  value={field.value}
-                  onChangeText={field.onChange}
-                  onBlur={field.onBlur}
-                  selectedCountry={selectedCountry}
-                  error={fieldState.error?.message}
-                  onSelectCountry={(country) => {
-                    setSelectedCountry(country);
-                    form.setValue('countryCode', country.code);
-                  }}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* 4. Age Input (Numbers only) */}
+        {/* 3. Age Input (Numbers only) - Under Gender */}
         <FormField
           control={form.control}
           name="age"
@@ -206,7 +182,31 @@ export function PersonalInfoStep({ onContinue }: PersonalInfoStepProps) {
           )}
         />
 
-        {/* 5. Location Select Component */}
+        {/* 4. Phone Input Component (Optional) */}
+        <FormField
+          control={form.control}
+          name="phoneNumber"
+          render={({ field, fieldState }) => (
+            <FormItem>
+              <FormControl>
+                <PhoneInput
+                  value={field.value ?? ''}
+                  onChangeText={field.onChange}
+                  onBlur={field.onBlur}
+                  selectedCountry={selectedCountry}
+                  error={fieldState.error?.message}
+                  onSelectCountry={(country) => {
+                    setSelectedCountry(country);
+                    form.setValue('countryCode', country.code);
+                  }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* 5. Location Select Component (Optional) */}
         <FormField
           control={form.control}
           name="location"

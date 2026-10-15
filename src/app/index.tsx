@@ -36,11 +36,11 @@ import {
   Textarea,
   ThemeToggle,
 } from '@/components/ui';
-import { useTheme } from '@/lib/theme';
+import { useUniwind } from 'uniwind';
 
 export default function Index() {
   const insets = useSafeAreaInsets();
-  const { theme } = useTheme();
+  const { theme } = useUniwind();
   const bottomSheetModalRef = useRef<GorhomBottomSheetModal>(null);
 
 
@@ -85,7 +85,7 @@ export default function Index() {
               </Text>
             </View>
             <View className="flex-row items-center gap-3">
-              <ThemeToggle transition='fade' />
+              <ThemeToggle />
               <Avatar name="Nar Fit" color="primary" size="lg" />
             </View>
           </View>
@@ -189,32 +189,38 @@ export default function Index() {
               rightIcon={<Icon as={ArrowRight} size={18} className="text-foreground" />}
               onPress={() => router.push('/dashboard/clients' as any)}
             />
+            <Button
+              title="Client Details Screen (307:6461)"
+              variant="default"
+              size="md"
+              rightIcon={<Icon as={ArrowRight} size={18} className="text-foreground" />}
+              onPress={() => router.push('/clients/1' as any)}
+            />
           </CardContent>
         </Card>
 
         {/* Circle Theme Transition card */}
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle>Circle Theme Transition</CardTitle>
+            <CardTitle>Theme Switching (Uniwind)</CardTitle>
             <CardDescription>
-              Circular reveal powered by @shopify/react-native-skia & react-native-theme-transition
+              Reactive light / dark theme toggle with Uniwind CSS variables
             </CardDescription>
           </CardHeader>
           <CardContent>
             <View className="flex-row items-center justify-between rounded-2xl border border-border bg-card p-4">
-              <View className='flex-1'>
+              <View className="flex-1">
                 <Text className="text-sm font-bold text-foreground">
-                  Current: {theme.name.toUpperCase()}
+                  Current: {String(theme).toUpperCase()}
                 </Text>
                 <Text className="text-xs text-muted">
-                  Tap the button to trigger circular Skia transition
+                  Tap button to switch theme
                 </Text>
               </View>
               <ThemeToggle
-                transition="circularReveal"
-                duration={900}
                 size={18}
-                className="h-10 w-10 rounded-full bg-brand"
+                className="h-10 w-10 items-center justify-center rounded-full bg-brand active:opacity-80"
+                iconClassName="text-inverse"
               />
             </View>
           </CardContent>

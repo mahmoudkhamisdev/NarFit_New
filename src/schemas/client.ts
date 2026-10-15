@@ -23,12 +23,15 @@ export const addClientFormSchema = z.object({
     .trim()
     .min(2, 'Name must be at least 2 characters'),
   gender: z.enum(['male', 'female', 'other']),
-  countryCode: z.string().min(1, 'Country code is required'),
+  countryCode: z.string().optional(),
   phoneNumber: z
     .string()
     .trim()
-    .min(6, 'Please enter a valid phone number'),
-  location: z.string().trim().min(1, 'Please select client location'),
+    .refine((val) => !val || val.length >= 6, {
+      message: 'Please enter a valid phone number',
+    })
+    .optional(),
+  location: z.string().trim().optional(),
   age: numericField('Age'),
   avatarId: z.string().optional(),
   photoUri: z.string().optional(),

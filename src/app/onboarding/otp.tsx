@@ -34,6 +34,7 @@ export default function OtpVerificationScreen() {
     (code?: string) => {
       if (isVerifying) return;
       setIsVerifying(true);
+      // TODO: API - Verify OTP code: POST /api/auth/verify-otp (payload: { code: code || otp.join('') })
       // Navigate after OTP verification to profile setup (Figma 39:4259)
       router.push('/onboarding/profile');
     },
@@ -42,6 +43,7 @@ export default function OtpVerificationScreen() {
 
   const handleResend = () => {
     if (timer === 0) {
+      // TODO: API - Resend OTP: POST /api/auth/resend-otp
       setTimer(30);
       setOtp(['', '', '', '', '', '']);
     }

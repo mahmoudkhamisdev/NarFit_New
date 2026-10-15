@@ -1,8 +1,6 @@
 import { useEffect } from 'react';
-import { THEME_STORAGE_KEY, ThemeTransitionProvider } from '@/lib/theme';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { Stack } from 'expo-router';
-import * as SecureStore from 'expo-secure-store';
 import * as SplashScreen from 'expo-splash-screen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { isExpoGo, useAppFonts, useAppUpdates } from '@/hook';
@@ -20,7 +18,7 @@ if (!isExpoGo) {
   });
 }
 
-function RootLayoutContent({ theme }: { theme: any }) {
+function RootLayoutContent() {
   const resolvedStyle = useResolveClassNames('text-background');
   const backgroundColor =
     (resolvedStyle?.backgroundColor as string) ??
@@ -29,16 +27,14 @@ function RootLayoutContent({ theme }: { theme: any }) {
 
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor }}>
-      <ThemeTransitionProvider initialTheme={theme ?? 'system'}>
-        <BottomSheetModalProvider>
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              animation: 'fade',
-              animationDuration: 250,
-              contentStyle: { backgroundColor },
-            }}
-          >
+      <BottomSheetModalProvider>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            animation: 'fade',
+            contentStyle: { backgroundColor },
+          }}
+        >
             <Stack.Screen name="index" />
             <Stack.Screen name="onboarding/welcome" />
             <Stack.Screen name="onboarding/signup-phone" />
@@ -54,9 +50,15 @@ function RootLayoutContent({ theme }: { theme: any }) {
               options={{ gestureEnabled: false }}
             />
             <Stack.Screen name="notifications/index" />
+            <Stack.Screen name="clients/[id]" />
+            <Stack.Screen name="clients/edit-info" />
+            <Stack.Screen name="clients/goal" />
+            <Stack.Screen name="clients/body-status" />
+            <Stack.Screen name="clients/add-measurement" />
+            <Stack.Screen name="plans/explore" />
+            <Stack.Screen name="plans/my-plans" />
           </Stack>
         </BottomSheetModalProvider>
-      </ThemeTransitionProvider>
     </GestureHandlerRootView>
   );
 }
@@ -64,13 +66,6 @@ function RootLayoutContent({ theme }: { theme: any }) {
 export default function RootLayout() {
   const { fontsLoaded, fontError } = useAppFonts();
   const { checkForUpdates } = useAppUpdates();
-
-  let theme;
-  try {
-    theme = SecureStore.getItem(THEME_STORAGE_KEY) as any;
-  } catch (error) {
-    console.log(error);
-  }
 
   useEffect(() => {
     async function prepareApp() {
@@ -94,5 +89,5 @@ export default function RootLayout() {
     return null;
   }
 
-  return <RootLayoutContent theme={theme} />;
+  return <RootLayoutContent />;
 }

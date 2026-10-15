@@ -97,6 +97,7 @@ export default function OnboardingScreen() {
   const handleFinalSubmit = form.handleSubmit(async (formData) => {
     try {
       setIsSubmitting(true);
+      // TODO: API - Submit coach onboarding profile: POST /api/coach/profile (payload: formData)
       // Navigate to All Set screen, replacing the onboarding wizard in history
       router.replace({
         pathname: '/onboarding/all-set',
@@ -140,10 +141,19 @@ export default function OnboardingScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1"
       >
+        {/* Fixed Top Bar with Back Button */}
+        <View
+          style={{ paddingTop: insets.top + 12 }}
+          className="flex-row items-center justify-between px-5 pb-2 bg-background z-20"
+        >
+          <BackButton onPress={handleBack} />
+          <View className="h-12 w-12" />
+        </View>
+
         <ScrollView
           className="flex-1"
           contentContainerStyle={{
-            paddingTop: insets.top + 12,
+            paddingTop: 8,
             paddingBottom: insets.bottom + 20,
             paddingHorizontal: 20,
             flexGrow: 1,
@@ -153,12 +163,6 @@ export default function OnboardingScreen() {
           showsVerticalScrollIndicator={false}
           bounces={false}
         >
-          {/* Top Bar with Back Button */}
-          <View className="flex-row items-center justify-between pb-1">
-            <BackButton onPress={handleBack} />
-            <View className="h-12 w-12" />
-          </View>
-
           {/* Form Context wrapper around animated Step view */}
           <Form {...form}>
             <FadeSlideIn

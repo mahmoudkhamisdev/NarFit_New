@@ -291,10 +291,10 @@ export function CalorieCalculationStep({
               </Pressable>
 
               <View className="flex-row gap-1 items-center">
-                <Text className="text-base font-black text-foreground">
+                <Text className="text-lg font-black text-foreground">
                   {currentCalorieTarget}
                 </Text>
-                <Text className="text-sm font-medium text-muted">kcal / day</Text>
+                <Text className="text-base font-medium text-muted">kcal / day</Text>
               </View>
 
               <Pressable

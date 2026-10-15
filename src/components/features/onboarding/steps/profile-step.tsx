@@ -1,4 +1,4 @@
-import { DateInput, GenderSelect } from '@/components/shared';
+import { DatePickerSheet, DatePickerSheetRef, GenderSelect } from '@/components/shared';
 import {
   Button,
   FormControl,
@@ -7,20 +7,39 @@ import {
   FormMessage,
   Icon,
   Input,
+  Text
 } from '@/components/ui';
 import { OnboardingFormValues } from '@/schemas/onboarding';
-import { User } from 'lucide-react-native';
+import { Calendar, User } from 'lucide-react-native';
 import React, { useRef } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { Text, TextInput, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 interface ProfileStepProps {
   onContinue: () => void;
 }
 
+function parseDobString(dobStr?: string): Date {
+  if (!dobStr) return new Date(2000, 0, 1);
+  const parts = dobStr.split('/');
+  if (parts.length === 3) {
+    const day = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1;
+    const year = parseInt(parts[2], 10);
+    if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+      return new Date(year, month, day);
+    }
+  }
+  const timestamp = Date.parse(dobStr);
+  if (!isNaN(timestamp)) {
+    return new Date(timestamp);
+  }
+  return new Date(2000, 0, 1);
+}
+
 export function ProfileStep({ onContinue }: ProfileStepProps) {
   const form = useFormContext<OnboardingFormValues>();
-  const dateInputRef = useRef<TextInput>(null);
+  const datePickerRef = useRef<DatePickerSheetRef>(null);
 
   const handleContinue = async () => {
     const isValid = await form.trigger(['name', 'dob', 'gender']);
@@ -52,7 +71,7 @@ export function ProfileStep({ onContinue }: ProfileStepProps) {
                   placeholder="Your name"
                   returnKeyType="next"
                   onSubmitEditing={() => {
-                    dateInputRef.current?.focus();
+                    datePickerRef.current?.present();
                   }}
                   blurOnSubmit={false}
                   leftIcon={<Icon as={User} size={22} className="text-muted" />}
@@ -66,24 +85,52 @@ export function ProfileStep({ onContinue }: ProfileStepProps) {
           )}
         />
 
-        {/* Masked Date of Birth Input */}
+        {/* Date of Birth Picker */}
         <FormField
           control={form.control}
           name="dob"
-          render={({ field, fieldState }) => (
-            <FormItem>
-              <FormControl>
-                <DateInput
-                  ref={dateInputRef}
-                  value={field.value}
-                  onChange={field.onChange}
-                  returnKeyType="done"
-                  error={fieldState.error?.message}
+          render={({ field, fieldState }) => {
+            const selectedDate = parseDobString(field.value);
+
+            return (
+              <FormItem>
+                <FormControl>
+                  <Pressable
+                    onPress={() => datePickerRef.current?.present()}
+                    accessibilityRole="button"
+                    accessibilityLabel="Date of birth"
+                    className={`h-18.5 w-full flex-row items-center rounded-2xl border-2 px-4 gap-3 bg-card ${
+                      fieldState.error ? 'border-error' : 'border-border'
+                    }`}
+                  >
+                    <View className="items-center justify-center pb-1">
+                      <Icon as={Calendar} size={22} className="text-muted" />
+                    </View>
+                    <Text
+                      className={`flex-1 text-lg font-semibold ${
+                        field.value ? 'text-foreground' : 'text-muted'
+                      }`}
+                    >
+                      {field.value || 'DD/MM/YYYY'}
+                    </Text>
+                  </Pressable>
+                </FormControl>
+                <FormMessage />
+
+                <DatePickerSheet
+                  ref={datePickerRef}
+                  selectedDate={selectedDate}
+                  title="Date of birth"
+                  onSelectDate={(date) => {
+                    const day = String(date.getDate()).padStart(2, '0');
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const year = date.getFullYear();
+                    field.onChange(`${day}/${month}/${year}`);
+                  }}
                 />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+              </FormItem>
+            );
+          }}
         />
 
         {/* Gender Selection */}

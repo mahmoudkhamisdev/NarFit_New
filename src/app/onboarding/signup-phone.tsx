@@ -23,6 +23,7 @@ export default function SignupPhoneScreen() {
   const [phoneNumber, setPhoneNumber] = useState('');
 
   const handleSignUp = () => {
+    // TODO: API - Send OTP to phone: POST /api/auth/send-otp (payload: { phone: `${selectedCountry.code}${phoneNumber}` })
     // Navigate to OTP verification screen (Figma node 72:6849)
     router.push('/onboarding/otp');
   };

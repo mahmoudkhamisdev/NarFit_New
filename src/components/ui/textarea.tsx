@@ -4,6 +4,9 @@ import {
   TextInputProps,
   View,
 } from 'react-native';
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import { PenLine } from 'lucide-react-native';
+import { Icon } from './icon';
 import { Text } from './text';
 
 export interface TextareaProps extends TextInputProps {
@@ -12,6 +15,9 @@ export interface TextareaProps extends TextInputProps {
   error?: string;
   required?: boolean;
   showCount?: boolean;
+  countPosition?: 'top' | 'bottom';
+  asBottomSheetInput?: boolean;
+  className?: string;
   containerClassName?: string;
   inputClassName?: string;
   labelClassName?: string;
@@ -25,9 +31,12 @@ export const Textarea = forwardRef<TextInput, TextareaProps>(
       error,
       required = false,
       showCount = false,
+      countPosition = 'top',
+      asBottomSheetInput = false,
       maxLength,
       value,
       defaultValue,
+      className = '',
       containerClassName = '',
       inputClassName = '',
       labelClassName = '',
@@ -39,6 +48,7 @@ export const Textarea = forwardRef<TextInput, TextareaProps>(
     },
     ref
   ) => {
+    const Component = asBottomSheetInput ? BottomSheetTextInput : TextInput;
     const [isFocused, setIsFocused] = useState(false);
     const [currentText, setCurrentText] = useState(value || defaultValue || '');
 
@@ -71,15 +81,14 @@ export const Textarea = forwardRef<TextInput, TextareaProps>(
           <View className="mb-2 flex-row items-center justify-between">
             <View className="flex-row items-center gap-1">
               <Text
-                className={`text-sm font-medium ${
-                  isDisabled ? 'text-disabled' : 'text-foreground'
-                } ${labelClassName}`}
+                className={`text-sm font-medium ${isDisabled ? 'text-disabled' : 'text-foreground'
+                  } ${labelClassName}`}
               >
                 {label}
               </Text>
               {required && <Text className="text-sm font-semibold text-brand">*</Text>}
             </View>
-            {showCount && maxLength && (
+            {showCount && maxLength && countPosition === 'top' && (
               <Text className="text-xs text-muted">
                 {characterCount}/{maxLength}
               </Text>
@@ -87,9 +96,12 @@ export const Textarea = forwardRef<TextInput, TextareaProps>(
           </View>
         )}
 
-        <View className={`min-h-35 w-full rounded-2xl border px-4 py-2 ${getFieldStateClasses()}`}>
-          <TextInput
-            ref={ref}
+        <View
+          className={`${className.includes('h-') || className.includes('min-h-') ? '' : 'min-h-35'
+            } w-full rounded-2xl border px-4 py-3 justify-between ${getFieldStateClasses()} ${className}`}
+        >
+          <Component
+            ref={ref as any}
             multiline
             editable={editable}
             maxLength={maxLength}
@@ -100,16 +112,25 @@ export const Textarea = forwardRef<TextInput, TextareaProps>(
             value={value}
             defaultValue={defaultValue}
             onChangeText={handleTextChange}
-            onFocus={(e) => {
+            onFocus={(e: any) => {
               setIsFocused(true);
               onFocus?.(e);
             }}
-            onBlur={(e) => {
+            onBlur={(e: any) => {
               setIsFocused(false);
               onBlur?.(e);
             }}
-            {...rest}
+            {...(rest as any)}
           />
+
+          {showCount && maxLength && countPosition === 'bottom' && (
+            <View className="flex-row items-center justify-end gap-1 pt-1">
+              <Text className="text-xs text-muted">
+                {characterCount}/{maxLength}
+              </Text>
+              <Icon as={PenLine} size={12} className="text-muted" />
+            </View>
+          )}
         </View>
 
         {error ? (

@@ -14,3 +14,4 @@ export * from './otp-input';
 export * from './form';
 export * from './text';
 export * from './slider';
+export * from './tabs';

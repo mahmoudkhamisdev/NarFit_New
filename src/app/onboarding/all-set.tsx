@@ -15,9 +15,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import BackButton from '@/components/features/onboarding/back-button';
 import { Text } from '@/components/ui/text';
 
-const correctMarkImg = require('@/assets/images/all-set/correct-mark.png');
-const lensImg = require('@/assets/images/all-set/lens.png');
-const addClientImg = require('@/assets/images/all-set/add-client.png');
+const correctMarkImg = require('@/assets/images/all-set/correct-mark.webp');
+const lensImg = require('@/assets/images/all-set/lens.webp');
+const addClientImg = require('@/assets/images/all-set/add-client.webp');
 
 export default function AllSetScreen() {
   const insets = useSafeAreaInsets();

@@ -1,22 +1,19 @@
-import { Button, Checkbox, Icon } from '@/components/ui';
+import { Button, Icon } from '@/components/ui';
 import { SlidersHorizontal } from 'lucide-react-native';
 import React from 'react';
 import { View } from 'react-native';
 import { Text } from '@/components/ui/text';
 
 export interface ClientsHeaderProps {
-  isSelectionMode: boolean;
-  isAllSelected: boolean;
+  isSelectionMode?: boolean;
+  isAllSelected?: boolean;
   onBackOrCancel?: () => void;
-  onToggleSelectAll: () => void;
+  onToggleSelectAll?: () => void;
   onOpenFilterSheet?: () => void;
 }
 
 export function ClientsHeader({
-  isSelectionMode,
-  isAllSelected,
-  onBackOrCancel,
-  onToggleSelectAll,
+  isSelectionMode = false,
   onOpenFilterSheet,
 }: ClientsHeaderProps) {
   return (
@@ -31,16 +28,8 @@ export function ClientsHeader({
         </Text>
       </View>
 
-      {/* Right slot: Selection Checkbox or Filter Button */}
-      {isSelectionMode ? (
-        <View className="flex-row items-center gap-3">
-          <Checkbox
-            checked={isAllSelected}
-            onCheckedChange={onToggleSelectAll}
-            boxClassName="size-7"
-          />
-        </View>
-      ) : (
+      {/* Right slot: Filter Button */}
+      {!isSelectionMode && (
         <Button
           variant="outline"
           size="sm"

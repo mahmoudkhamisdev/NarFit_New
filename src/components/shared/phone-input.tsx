@@ -14,7 +14,7 @@ import {
 import { Text } from '@/components/ui/text';
 
 export interface PhoneInputProps {
-  value: string;
+  value?: string;
   onChangeText: (text: string) => void;
   onBlur?: () => void;
   selectedCountry?: Country;

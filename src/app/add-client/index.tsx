@@ -6,6 +6,7 @@ import {
   defaultAddClientValues,
   serializeClientForm,
 } from '@/schemas/client';
+import { useAddClientStore } from '@/store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -20,17 +21,35 @@ import {
 } from 'react-native';
 import { FadeSlideIn } from 'react-native-animation-kit';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { AddClientStepper } from '@/components/features/add-client/stepper';
+import {
+  AddClientStepper,
+  ResumeProgressDialog,
+  ActivityStep,
+  BodyInfoStep,
+  CalorieCalculationStep,
+  GoalStep,
+  GoalTargetStep,
+  PersonalInfoStep,
+  WorkoutRoutineStep,
+} from '@/components/features/add-client';
 import { Text } from '@/components/ui/text';
-import { ActivityStep, BodyInfoStep, CalorieCalculationStep, GoalStep, GoalTargetStep, PersonalInfoStep, WorkoutRoutineStep } from '@/components/features/add-client/steps';
 
 export default function AddClientScreen() {
   const insets = useSafeAreaInsets();
+
+  const storedStep = useAddClientStore((s) => s.currentStep);
+  const setStepInStore = useAddClientStore((s) => s.setStep);
+  const setFormDataInStore = useAddClientStore((s) => s.setFormData);
+  const resetProgressInStore = useAddClientStore((s) => s.resetProgress);
 
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [direction, setDirection] = useState<'left' | 'right'>('right');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  // Resume dialog state
+  const [showResumeModal, setShowResumeModal] = useState<boolean>(false);
+  const [hasCheckedResume, setHasCheckedResume] = useState<boolean>(false);
 
   // Single centralized form instance holding state across all steps
   const form = useForm<AddClientFormValues>({
@@ -39,21 +58,85 @@ export default function AddClientScreen() {
     mode: 'onBlur',
   });
 
+  // Check saved progress from store on initial load
+  useEffect(() => {
+    const checkResume = () => {
+      const state = useAddClientStore.getState();
+      const hasProgress =
+        (state.currentStep && state.currentStep > 1) ||
+        Boolean(state.formData?.name && state.formData.name.trim().length > 0);
+
+      if (hasProgress && !hasCheckedResume) {
+        setHasCheckedResume(true);
+        setShowResumeModal(true);
+      }
+    };
+
+    if (useAddClientStore.persist.hasHydrated()) {
+      checkResume();
+    } else {
+      const unsub = useAddClientStore.persist.onFinishHydration(() => {
+        checkResume();
+      });
+      return () => unsub();
+    }
+  }, [hasCheckedResume]);
+
+  // Keep store in sync with form changes
+  useEffect(() => {
+    const subscription = form.watch((value) => {
+      setFormDataInStore(value as Partial<AddClientFormValues>);
+    });
+    return () => subscription.unsubscribe();
+  }, [form, setFormDataInStore]);
+
+  // Handle resume dialog actions
+  const handleResume = () => {
+    const state = useAddClientStore.getState();
+    form.reset({
+      ...defaultAddClientValues,
+      ...state.formData,
+    });
+    const targetStep = state.currentStep > 0 ? state.currentStep : 1;
+    setCurrentStep(targetStep);
+    setShowResumeModal(false);
+  };
+
+  const handleStartFresh = () => {
+    resetProgressInStore();
+    form.reset(defaultAddClientValues);
+    setCurrentStep(1);
+    setStepInStore(1);
+    setShowResumeModal(false);
+  };
+
+  // Step navigation helper
+  const goToStep = (stepNumber: number) => {
+    const values = form.getValues();
+    setFormDataInStore(values);
+    setStepInStore(stepNumber);
+    setDirection('right');
+    setCurrentStep(stepNumber);
+  };
+
   // Handle hardware back on Android and BackButton click
-  const handleBack = () => {
+  const handleBack = React.useCallback(() => {
     if (currentStep > 1) {
+      const prevStep = currentStep - 1;
+      const values = form.getValues();
+      setFormDataInStore(values);
+      setStepInStore(prevStep);
       setDirection('left');
-      setCurrentStep((prev) => prev - 1);
+      setCurrentStep(prevStep);
     } else {
       router.back();
     }
-  };
+  }, [currentStep, form, setFormDataInStore, setStepInStore]);
 
   useEffect(() => {
     const onBackPress = () => {
       if (currentStep > 1) {
-        setDirection('left');
-        setCurrentStep((prev) => prev - 1);
+        handleBack();
         return true; // Prevent exiting the screen
       }
       return false; // Default back navigation on step 1
@@ -61,38 +144,7 @@ export default function AddClientScreen() {
 
     const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
     return () => subscription.remove();
-  }, [currentStep]);
-
-  // Step navigation handlers
-  const handleGoToStep2 = () => {
-    setDirection('right');
-    setCurrentStep(2);
-  };
-
-  const handleGoToStep3 = () => {
-    setDirection('right');
-    setCurrentStep(3);
-  };
-
-  const handleGoToStep4 = () => {
-    setDirection('right');
-    setCurrentStep(4);
-  };
-
-  const handleGoToStep5 = () => {
-    setDirection('right');
-    setCurrentStep(5);
-  };
-
-  const handleGoToStep6 = () => {
-    setDirection('right');
-    setCurrentStep(6);
-  };
-
-  const handleGoToStep7 = () => {
-    setDirection('right');
-    setCurrentStep(7);
-  };
+  }, [currentStep, handleBack]);
 
   // Final submission handler
   const handleFinalSubmit = form.handleSubmit(async (formData) => {
@@ -110,6 +162,11 @@ export default function AddClientScreen() {
         targetWeight: formData.targetWeight ? String(formData.targetWeight) : undefined,
         weeklyGoalRate: Number(formData.weeklyGoalRate || 0.5),
       };
+
+      // Reset stored draft on successful submission
+      resetProgressInStore();
+
+      // TODO: API - Create new client: POST /api/clients (payload: completeData)
 
       // Navigate to success screen, replacing the add-client wizard in the history stack
       router.replace({
@@ -130,21 +187,21 @@ export default function AddClientScreen() {
   const renderCurrentStep = () => {
     switch (currentStep) {
       case 1:
-        return <PersonalInfoStep onContinue={handleGoToStep2} />;
+        return <PersonalInfoStep onContinue={() => goToStep(2)} />;
       case 2:
-        return <BodyInfoStep onContinue={handleGoToStep3} />;
+        return <BodyInfoStep onContinue={() => goToStep(3)} />;
       case 3:
-        return <GoalStep onContinue={handleGoToStep4} />;
+        return <GoalStep onContinue={() => goToStep(4)} />;
       case 4:
-        return <ActivityStep onContinue={handleGoToStep5} />;
+        return <ActivityStep onContinue={() => goToStep(5)} />;
       case 5:
-        return <WorkoutRoutineStep onContinue={handleGoToStep6} />;
+        return <WorkoutRoutineStep onContinue={() => goToStep(6)} />;
       case 6:
         return (
           <CalorieCalculationStep
             isSubmitting={isSubmitting}
             submitError={submitError}
-            onSubmit={handleGoToStep7}
+            onSubmit={() => goToStep(7)}
           />
         );
       case 7:
@@ -165,19 +222,13 @@ export default function AddClientScreen() {
       <StatusBar style="auto" hidden />
 
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : "height"}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1"
       >
-        <ScrollView
-          className="flex-1"
-          contentContainerStyle={{
-            paddingTop: insets.top + 12,
-            paddingBottom: insets.bottom + 24,
-            paddingHorizontal: 16,
-            flexGrow: 1,
-          }}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
+        {/* Fixed Header & Stepper on top */}
+        <View
+          style={{ paddingTop: insets.top + 12 }}
+          className="px-4 bg-background z-20"
         >
           {/* Header Bar */}
           <View className="flex-row items-center justify-between">
@@ -193,7 +244,19 @@ export default function AddClientScreen() {
 
           {/* Stepper / Progress Bar (updates with currentStep) */}
           <AddClientStepper currentStep={currentStep} />
+        </View>
 
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{
+            paddingTop: 8,
+            paddingBottom: insets.bottom + 24,
+            paddingHorizontal: 16,
+            flexGrow: 1,
+          }}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
           {/* Form Context wrapper around animated Step view */}
           <Form {...form}>
             <FadeSlideIn
@@ -208,6 +271,14 @@ export default function AddClientScreen() {
           </Form>
         </ScrollView>
       </KeyboardAvoidingView>
+
+      {/* Resume Progress Dialog */}
+      <ResumeProgressDialog
+        visible={showResumeModal}
+        stepNumber={storedStep || 1}
+        onResume={handleResume}
+        onStartFresh={handleStartFresh}
+      />
     </View>
   );
 }

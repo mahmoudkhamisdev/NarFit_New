@@ -11,6 +11,7 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import {
   ClientCard,
   ClientsActionBar,
@@ -21,6 +22,8 @@ import {
 
 export default function DashboardClientsScreen() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
+  // TODO: API - Fetch clients list: GET /api/clients?status=${selectedFilter}&search=${searchQuery}
   const [clients, setClients] = useState<ClientItem[]>(MOCK_CLIENTS);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedFilter, setSelectedFilter] = useState<ClientStatusFilter>('all');
@@ -33,7 +36,11 @@ export default function DashboardClientsScreen() {
     [clients]
   );
   const restCount = useMemo(
-    () => clients.filter((c) => c.status === 'Rest day').length,
+    () => clients.filter((c) => c.status === 'Rest' || c.status === 'Rest day').length,
+    [clients]
+  );
+  const attentionCount = useMemo(
+    () => clients.filter((c) => c.status === 'Attention').length,
     [clients]
   );
 
@@ -44,7 +51,10 @@ export default function DashboardClientsScreen() {
       if (selectedFilter === 'training' && client.status !== 'Training') {
         return false;
       }
-      if (selectedFilter === 'rest' && client.status !== 'Rest day') {
+      if (selectedFilter === 'rest' && client.status !== 'Rest' && client.status !== 'Rest day') {
+        return false;
+      }
+      if (selectedFilter === 'attention' && client.status !== 'Attention') {
         return false;
       }
 
@@ -78,8 +88,16 @@ export default function DashboardClientsScreen() {
         } else {
           next.add(id);
         }
+        if (next.size === 0) {
+          setIsSelectionMode(false);
+        }
         return next;
       });
+    } else {
+      router.push({
+        pathname: '/clients/[id]',
+        params: { id },
+      } as any);
     }
   };
 
@@ -112,6 +130,7 @@ export default function DashboardClientsScreen() {
           text: 'Delete',
           style: 'destructive',
           onPress: () => {
+            // TODO: API - Delete clients: DELETE /api/clients (payload: Array.from(selectedIds))
             setClients((prev) => prev.filter((item) => !selectedIds.has(item.id)));
             setIsSelectionMode(false);
             setSelectedIds(new Set());
@@ -145,9 +164,7 @@ export default function DashboardClientsScreen() {
       >
         <ClientsHeader
           isSelectionMode={isSelectionMode}
-          isAllSelected={isAllSelected}
           onBackOrCancel={isSelectionMode ? handleCancelSelection : undefined}
-          onToggleSelectAll={handleToggleSelectAll}
         />
 
         <ClientsSearchFilter
@@ -158,6 +175,7 @@ export default function DashboardClientsScreen() {
           totalCount={clients.length}
           trainingCount={trainingCount}
           restCount={restCount}
+          attentionCount={attentionCount}
         />
       </View>
 
@@ -168,7 +186,7 @@ export default function DashboardClientsScreen() {
         contentContainerStyle={{
           paddingTop: 8,
           paddingHorizontal: 16,
-          paddingBottom: isSelectionMode ? insets.bottom + 120 : insets.bottom + 100,
+          paddingBottom: isSelectionMode ? insets.bottom + 155 : insets.bottom + 100,
           gap: 12,
         }}
         showsVerticalScrollIndicator={false}
@@ -189,13 +207,18 @@ export default function DashboardClientsScreen() {
         )}
       />
 
-      {/* Floating Selection Mode Bottom Action Bar */}
+      {/* Floating Selection Mode Bottom Action Bar (Figma 302:6248) */}
       <ClientsActionBar
         visible={isSelectionMode}
         selectedCount={selectedIds.size}
         totalVisibleCount={filteredClients.length}
+        isAllSelected={isAllSelected}
+        onToggleSelectAll={handleToggleSelectAll}
         onCancel={handleCancelSelection}
         onDeleteSelected={handleDeleteSelected}
+        // onAssignWorkoutPlan={handleAssignWorkoutPlan}
+        // onAssignDietPlan={handleAssignDietPlan}
+        // onChangeStatus={handleChangeStatus}
       />
     </View>
   );

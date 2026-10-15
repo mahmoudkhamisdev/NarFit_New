@@ -13,6 +13,7 @@ export interface ClientsSearchFilterProps {
   totalCount: number;
   trainingCount: number;
   restCount: number;
+  attentionCount?: number;
 }
 
 export function ClientsSearchFilter({
@@ -23,10 +24,12 @@ export function ClientsSearchFilter({
   totalCount,
   trainingCount,
   restCount,
+  attentionCount = 0,
 }: ClientsSearchFilterProps) {
   const filterTabs = [
     { id: 'all' as const, label: 'All clients', count: totalCount },
     { id: 'training' as const, label: 'Training today', count: trainingCount },
+    { id: 'attention' as const, label: 'Need attention', count: attentionCount },
     { id: 'rest' as const, label: 'Rest day', count: restCount },
   ];
 
@@ -52,3 +55,5 @@ export function ClientsSearchFilter({
     </View>
   );
 }
+
+export default ClientsSearchFilter;

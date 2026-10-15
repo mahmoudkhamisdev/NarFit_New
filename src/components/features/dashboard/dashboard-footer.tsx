@@ -71,6 +71,8 @@ export function DashboardFooter({
       onTabChange(tab);
     } else if (tab === 'clients') {
       router.replace('/dashboard/clients' as any);
+    } else if (tab === 'plans') {
+      router.replace('/dashboard/plans' as any);
     } else if (tab === 'home') {
       router.replace('/dashboard' as any);
     }
